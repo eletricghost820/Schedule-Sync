@@ -265,6 +265,7 @@ export const STUDENTS: Student[] = [
   },
 ];
 
+
 export function getStudent(id: string) {
   return STUDENTS.find((s) => s.id === id);
 }
