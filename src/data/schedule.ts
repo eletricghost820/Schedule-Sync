@@ -263,6 +263,30 @@ export const STUDENTS: Student[] = [
       "09": { className: "Physical Ed 9", teacher: "Shemroske, Samuel", room: "Gym" },
     },
   },
+  {
+    id: "zachary-king",
+    name: "Zachary King",
+    initials: "ZK",
+    counselor: "Romack, Kathleen",
+    slots: {
+      "01": { className: "Alg 1", teacher: "White, Tenesha", room: "Rm 3155" },
+      "02": { className: "Spanish 1", teacher: "Heintzelman, Carmela", room: "Rm 2320" },
+      "03": { className: "Modern World History", teacher: "Torres, Paul", room: "Rm 3015" },
+      HR: { className: "Homeroom", teacher: "Aichholzer, Haley Demerise", room: "Rm 1010" },
+      "04": { className: "Lunch", teacher: "Staff", room: "Cafe" },
+      "05": {
+        className: "Frosh Study Hall",
+        teacher: "—",
+        room: "So Lobby (Mon) / Rm 1750 (Wed,Fri)",
+        days: "Mon/Wed/Fri",
+        alt: { className: "Biology Hon", teacher: "Schram, Susan", room: "Rm 1430", days: "Tue/Thu" },
+      },
+      "06": { className: "Biology Hon", teacher: "Schram, Susan", room: "Rm 1430" },
+      "07": { className: "Business & Tech 1", teacher: "Khasho, Raymond", room: "Rm 1315" },
+      "08": { className: "English 9", teacher: "Ukomadu, Tenesha", room: "Rm 1160" },
+      "09": { className: "Physical Ed 9", teacher: "Shemroske, Samuel", room: "Gym" },
+    },
+  },
 ];
 
 
