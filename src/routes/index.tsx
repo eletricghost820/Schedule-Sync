@@ -23,7 +23,7 @@ function Index() {
   return (
     <div className="space-y-5">
       <section>
-        <h1 className="text-2xl font-bold">The Crew</h1>
+        <h1 className="text-2xl font-bold">The Aura Crew</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Tap a friend to see their full day, period by period.
         </p>
