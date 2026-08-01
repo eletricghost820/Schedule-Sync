@@ -21,13 +21,13 @@ const NAV = [
 function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border bg-primary text-primary-foreground">
+      <header className="sticky top-0 z-20 border-b border-border bg-card/80 text-foreground backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
           <Link to="/" className="font-display text-lg font-bold tracking-tight">
-            Schedule Sync
+            Schedule <span className="text-primary">Sync</span>
           </Link>
-          <span className="ml-auto text-[11px] uppercase tracking-widest opacity-70">
-            Class of &rsquo;29
+          <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground">
+            Class of 2030
           </span>
         </div>
         <nav className="mx-auto flex max-w-3xl gap-1 px-2 pb-2">
@@ -36,8 +36,8 @@ function SiteChrome({ children }: { children: ReactNode }) {
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              className="flex-1 rounded-md px-3 py-2 text-center text-sm font-medium opacity-75 transition-colors hover:opacity-100"
-              activeProps={{ className: "bg-background/15 opacity-100" }}
+              className="flex-1 rounded-md px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              activeProps={{ className: "bg-primary text-primary-foreground hover:text-primary-foreground" }}
             >
               {item.label}
             </Link>
