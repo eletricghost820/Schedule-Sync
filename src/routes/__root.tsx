@@ -12,6 +12,43 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
+const NAV = [
+  { to: "/", label: "Friends" },
+  { to: "/free-periods", label: "Free Periods" },
+  { to: "/overlap", label: "Class Overlap" },
+] as const;
+
+function SiteChrome({ children }: { children: ReactNode }) {
+  return (
+    <div className="min-h-screen bg-background">
+      <header className="sticky top-0 z-20 border-b border-border bg-primary text-primary-foreground">
+        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
+          <Link to="/" className="font-display text-lg font-bold tracking-tight">
+            Schedule Sync
+          </Link>
+          <span className="ml-auto text-[11px] uppercase tracking-widest opacity-70">
+            Class of &rsquo;29
+          </span>
+        </div>
+        <nav className="mx-auto flex max-w-3xl gap-1 px-2 pb-2">
+          {NAV.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              activeOptions={{ exact: item.to === "/" }}
+              className="flex-1 rounded-md px-3 py-2 text-center text-sm font-medium opacity-75 transition-colors hover:opacity-100"
+              activeProps={{ className: "bg-background/15 opacity-100" }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </header>
+      <main className="mx-auto max-w-3xl px-4 pb-16 pt-5">{children}</main>
+    </div>
+  );
+}
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -91,6 +128,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap",
+      },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -120,7 +163,9 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <SiteChrome>
+        <Outlet />
+      </SiteChrome>
     </QueryClientProvider>
   );
 }
