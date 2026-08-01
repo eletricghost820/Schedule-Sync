@@ -28,7 +28,7 @@ export const Route = createFileRoute("/overlap")({
   component: Overlap,
 });
 
-type Entry = { student: Student; teacher: string; room: string; days?: string };
+type Entry = { student: Student; teacher: string; room: string; days?: string | undefined };
 
 function Overlap() {
   const [period, setPeriod] = useState<PeriodId>("01");
