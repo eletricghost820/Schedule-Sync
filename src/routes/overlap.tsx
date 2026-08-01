@@ -30,6 +30,9 @@ export const Route = createFileRoute("/overlap")({
 
 type Entry = { student: Student; teacher: string; room: string; days?: string | undefined };
 
+/** Homeroom shown last in the period picker. */
+const PICKER_ORDER: PeriodId[] = [...PERIOD_ORDER.filter((p) => p !== "HR"), "HR"];
+
 function Overlap() {
   const [period, setPeriod] = useState<PeriodId>("01");
 
@@ -63,7 +66,7 @@ function Overlap() {
       </section>
 
       <div className="flex flex-wrap gap-2">
-        {PERIOD_ORDER.map((p) => (
+        {PICKER_ORDER.map((p) => (
           <button
             key={p}
             type="button"
