@@ -54,7 +54,10 @@ function StudentPage() {
         </span>
         <div>
           <h1 className="text-2xl font-bold leading-tight">{student.name}</h1>
-          <p className="text-xs text-muted-foreground">Daily schedule · standard bell times</p>
+          <p className="text-xs text-muted-foreground">
+            Daily schedule · standard bell times
+            {student.counselor ? ` · Counselor: ${student.counselor}` : ""}
+          </p>
         </div>
       </header>
 

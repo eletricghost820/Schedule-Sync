@@ -75,6 +75,7 @@ export type Student = {
   id: string;
   name: string;
   initials: string;
+  counselor?: string;
   slots: Partial<Record<PeriodId, Slot>>;
 };
 
@@ -242,6 +243,24 @@ export const STUDENTS: Student[] = [
         },
       },
       "09": { className: "French 1", teacher: "Nimtz, Catherine", room: "Rm 3010" },
+    },
+  },
+  {
+    id: "aariz-fazili",
+    name: "Aariz Fazili",
+    initials: "AF",
+    counselor: "Green, Carla Morgan",
+    slots: {
+      "01": { className: "Reading 9", teacher: "Nageeb, Maheen", room: "Rm 1195" },
+      "02": { className: "Modern World History", teacher: "Kokoris, Christina", room: "Rm 2235" },
+      "03": { className: "Alg 1", teacher: "White, Tenesha", room: "Rm 3155" },
+      HR: { className: "Homeroom", teacher: "Jackson, Kristen", room: "Rm 1165" },
+      "04": { className: "Spanish 1", teacher: "Heintzelman, Carmela", room: "Rm 2320" },
+      "05": { className: "English 9", teacher: "Feiereisel, Ronald", room: "Rm 1025" },
+      "06": { className: "Lunch", teacher: "Staff", room: "Cafe" },
+      "07": { className: "Biology", teacher: "Fortune, Kathleen", room: "Rm 2415" },
+      "08": { className: "Frosh Study Hall", teacher: "—", room: "Rm 1750" },
+      "09": { className: "Physical Ed 9", teacher: "Shemroske, Samuel", room: "Gym" },
     },
   },
 ];
