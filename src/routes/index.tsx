@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
 import { STUDENTS, PERIOD_ORDER, isFree } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
+import { InstallButton } from "@/components/InstallButton";
 
 const title = "Schedule Sync — Shared Class Schedules";
 const description =
@@ -78,6 +79,7 @@ function Index() {
             >
               Class overlap <ArrowUpRight className="size-4" />
             </Link>
+            <InstallButton />
           </div>
 
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
