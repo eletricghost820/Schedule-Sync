@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import logoAsset from "../assets/logo.png.asset.json";
 
 const NAV = [
   { to: "/", label: "Friends" },
@@ -23,8 +24,17 @@ function SiteChrome({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-20 border-b border-border bg-card/80 text-foreground backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
-          <Link to="/" className="font-display text-lg font-bold tracking-tight">
-            Schedule <span className="text-primary">Sync</span>
+          <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
+            <img
+              src={logoAsset.url}
+              alt="Schedule Sync logo"
+              width={32}
+              height={32}
+              className="size-8 rounded-lg"
+            />
+            <span>
+              Schedule <span className="text-primary">Sync</span>
+            </span>
           </Link>
           <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground">
             Class of 2030
@@ -124,6 +134,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Lovable App" },
       { name: "twitter:description", content: "Friend Schedule Sync is a web app for viewing friends' class schedules and finding common free periods." },
+      { name: "theme-color", content: "#0a0714" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Schedule Sync" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b31c4e34-b61e-4daa-92ab-07b0f7222e2b/id-preview-ef693ee6--574426df-efa2-4cf8-b90d-215c640d442b.lovable.app-1785625292482.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/b31c4e34-b61e-4daa-92ab-07b0f7222e2b/id-preview-ef693ee6--574426df-efa2-4cf8-b90d-215c640d442b.lovable.app-1785625292482.png" },
     ],
@@ -138,7 +152,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: "apple-touch-icon", href: "/icon-180.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
     ],
   }),
   shellComponent: RootShell,
