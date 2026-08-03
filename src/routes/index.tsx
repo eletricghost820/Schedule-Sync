@@ -53,13 +53,10 @@ function Index() {
             Class of 2030
           </span>
           <h1 className="mt-4 font-display text-4xl font-extrabold uppercase leading-[0.92] tracking-tight sm:text-6xl">
-            The Aura Crew
+            Schedule
           </h1>
-          <p className="mt-1 font-display text-2xl font-medium italic text-muted-foreground sm:text-3xl">
-            Every period, every room
-          </p>
           <p className="mt-1 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-primary sm:text-6xl">
-            Synced up.
+            Sync
           </p>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
             Full daily schedules for all {STUDENTS.length} of us — plus a free
