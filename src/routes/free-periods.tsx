@@ -3,10 +3,10 @@ import {
   BELL_TIMES,
   PERIOD_LABEL,
   PERIOD_ORDER,
-  STUDENTS,
   isFree,
   isPartiallyFree,
 } from "@/data/schedule";
+import { useAllStudents } from "@/lib/community";
 import { WednesdayNote } from "@/components/WednesdayNote";
 
 const title = "Free Period Finder — Schedule Sync";
@@ -26,8 +26,9 @@ export const Route = createFileRoute("/free-periods")({
 });
 
 function FreePeriods() {
+  const { students } = useAllStudents();
   const rows = PERIOD_ORDER.map((p) => {
-    const cells = STUDENTS.map((s) => {
+    const cells = students.map((s) => {
       const slot = s.slots[p];
       const free = p !== "HR" && isFree(slot);
       return {
@@ -63,7 +64,7 @@ function FreePeriods() {
               <th className="sticky left-0 z-10 bg-secondary px-3 py-2 text-left font-semibold">
                 Period
               </th>
-              {STUDENTS.map((s) => (
+              {students.map((s) => (
                 <th key={s.id} className="px-2 py-2 font-semibold">
                   {s.initials}
                 </th>

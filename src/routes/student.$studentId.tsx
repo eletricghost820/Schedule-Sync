@@ -1,23 +1,22 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import {
   BELL_TIMES,
   PERIOD_LABEL,
   PERIOD_ORDER,
-  STUDENTS,
   getStudent,
   isFree,
 } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
+import { useAllStudents } from "@/lib/community";
 
 export const Route = createFileRoute("/student/$studentId")({
   loader: ({ params }) => {
     const student = getStudent(params.studentId);
-    if (!student) throw notFound();
-    return { student };
+    return { student: student ?? null };
   },
   head: ({ loaderData }) => {
-    if (!loaderData) {
+    if (!loaderData?.student) {
       return {
         meta: [{ title: "Student not found — Schedule Sync" }, { name: "robots", content: "noindex" }],
       };
@@ -37,7 +36,17 @@ export const Route = createFileRoute("/student/$studentId")({
 });
 
 function StudentPage() {
-  const { student } = Route.useLoaderData();
+  const { studentId } = Route.useParams();
+  const { students, isLoading } = useAllStudents();
+  const student = students.find((s) => s.id === studentId);
+
+  if (!student) {
+    return (
+      <p className="py-10 text-center text-sm text-muted-foreground">
+        {isLoading ? "Loading schedule…" : "That schedule doesn't exist anymore."}
+      </p>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -127,7 +136,7 @@ function StudentPage() {
       <WednesdayNote />
 
       <div className="flex flex-wrap gap-2 pt-1">
-        {STUDENTS.filter((s) => s.id !== student.id).map((s) => (
+        {students.filter((s) => s.id !== student.id).map((s) => (
           <Link
             key={s.id}
             to="/student/$studentId"
