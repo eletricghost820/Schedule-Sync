@@ -12,11 +12,14 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import logoAsset from "../assets/logo.png.asset.json";
+import { PageTransition } from "../components/PageTransition";
+import { Toaster } from "../components/ui/sonner";
 
 const NAV = [
   { to: "/", label: "Friends" },
   { to: "/free-periods", label: "Free Periods" },
   { to: "/overlap", label: "Class Overlap" },
+  { to: "/add-schedule", label: "Add Yours" },
 ] as const;
 
 function SiteChrome({ children }: { children: ReactNode }) {
@@ -40,13 +43,13 @@ function SiteChrome({ children }: { children: ReactNode }) {
             Class of 2030
           </span>
         </div>
-        <nav className="mx-auto flex max-w-3xl gap-1 px-2 pb-2">
+        <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-2">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              className="flex-1 rounded-md px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="flex-1 whitespace-nowrap rounded-md px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               activeProps={{ className: "bg-primary text-primary-foreground hover:text-primary-foreground" }}
             >
               {item.label}
@@ -184,8 +187,11 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <SiteChrome>
-        <Outlet />
+        <PageTransition>
+          <Outlet />
+        </PageTransition>
       </SiteChrome>
+      <Toaster position="top-center" />
     </QueryClientProvider>
   );
 }
