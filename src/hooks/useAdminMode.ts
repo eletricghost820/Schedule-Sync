@@ -3,19 +3,22 @@ import { useCallback, useEffect, useState } from "react";
 const KEY = "schedule-sync-admin";
 const EVENT = "schedule-sync-admin-change";
 
-/** Client-side admin flag. The password itself is verified on the server. */
+/**
+ * Client-side admin flag. The password is always re-verified on the server
+ * before anything is actually deleted.
+ */
 export function useAdminMode() {
-  const [admin, setAdmin] = useState(false);
+  const [password, setPassword] = useState<string | null>(null);
 
   useEffect(() => {
-    const read = () => setAdmin(sessionStorage.getItem(KEY) === "1");
+    const read = () => setPassword(sessionStorage.getItem(KEY));
     read();
     window.addEventListener(EVENT, read);
     return () => window.removeEventListener(EVENT, read);
   }, []);
 
-  const enable = useCallback(() => {
-    sessionStorage.setItem(KEY, "1");
+  const enable = useCallback((pw: string) => {
+    sessionStorage.setItem(KEY, pw);
     window.dispatchEvent(new Event(EVENT));
   }, []);
 
@@ -24,5 +27,5 @@ export function useAdminMode() {
     window.dispatchEvent(new Event(EVENT));
   }, []);
 
-  return { admin, enable, disable };
+  return { admin: password !== null, password, enable, disable };
 }
