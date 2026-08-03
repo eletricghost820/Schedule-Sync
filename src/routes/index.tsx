@@ -85,7 +85,7 @@ function Index() {
             Sync
           </p>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Full daily schedules for all {STUDENTS.length} of us — plus a free
+            Full daily schedules for all {students.length} of us — plus a free
             period finder and shared class matcher, so nobody eats lunch alone.
           </p>
 
@@ -108,7 +108,7 @@ function Index() {
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
-              {STUDENTS.length} friends tracked
+              {students.length} friends tracked
             </span>
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-free" />
