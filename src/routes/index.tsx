@@ -1,8 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
-import { STUDENTS, PERIOD_ORDER, isFree } from "@/data/schedule";
+import { useServerFn } from "@tanstack/react-start";
+import { ArrowRight, ArrowUpRight, ChevronRight, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { PERIOD_ORDER, isFree } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
 import { InstallButton } from "@/components/InstallButton";
+import { AdminControl } from "@/components/AdminControl";
+import { useAdminMode } from "@/hooks/useAdminMode";
+import { isCommunityStudent, useAllStudents, useRefreshCommunity } from "@/lib/community";
+import { removeCommunitySchedule } from "@/lib/schedule.functions";
 
 const title = "Schedule Sync — Shared Class Schedules";
 const description =
@@ -21,7 +27,27 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
-  const totalFree = STUDENTS.reduce(
+  const { students } = useAllStudents();
+  const { admin, password } = useAdminMode();
+  const remove = useServerFn(removeCommunitySchedule);
+  const refresh = useRefreshCommunity();
+
+  async function handleRemove(rowId: string, name: string) {
+    if (!password) return;
+    try {
+      const res = await remove({ data: { password, id: rowId } });
+      if (!res.ok) {
+        toast.error("Admin password no longer valid");
+        return;
+      }
+      await refresh();
+      toast.success(`Removed ${name}`);
+    } catch {
+      toast.error("Could not remove that schedule");
+    }
+  }
+
+  const totalFree = students.reduce(
     (n, s) =>
       n + PERIOD_ORDER.filter((p) => p !== "HR" && isFree(s.slots[p])).length,
     0,
@@ -59,7 +85,7 @@ function Index() {
             Sync
           </p>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-            Full daily schedules for all {STUDENTS.length} of us — plus a free
+            Full daily schedules for all {students.length} of us — plus a free
             period finder and shared class matcher, so nobody eats lunch alone.
           </p>
 
@@ -82,7 +108,7 @@ function Index() {
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
-              {STUDENTS.length} friends tracked
+              {students.length} friends tracked
             </span>
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-free" />
@@ -97,37 +123,54 @@ function Index() {
       </section>
 
       <section>
-        <h2 className="font-display text-xl font-bold uppercase tracking-tight">
-          The Crew
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="font-display text-xl font-bold uppercase tracking-tight">
+            The Crew
+          </h2>
+          <div className="ml-auto">
+            <AdminControl />
+          </div>
+        </div>
         <p className="mt-1 text-sm text-muted-foreground">
           Tap a friend to see their full day, period by period.
+          {admin ? " Admin mode is on — you can remove added schedules." : ""}
         </p>
       </section>
 
       <div className="grid grid-cols-2 gap-3">
-        {STUDENTS.map((s) => {
+        {students.map((s) => {
           const freeCount = PERIOD_ORDER.filter(
             (p) => p !== "HR" && isFree(s.slots[p]),
           ).length;
+          const community = isCommunityStudent(s);
           return (
-            <Link
-              key={s.id}
-              to="/student/$studentId"
-              params={{ studentId: s.id }}
-              className="group flex flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-            >
-              <span className="flex size-10 items-center justify-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
-                {s.initials}
-              </span>
-              <span className="mt-3 font-display text-base font-bold leading-tight">
-                {s.name}
-              </span>
-              <span className="mt-1 flex items-center text-xs text-muted-foreground">
-                {freeCount} free {freeCount === 1 ? "period" : "periods"}
-                <ChevronRight className="ml-auto size-4 text-primary transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </Link>
+            <div key={s.id} className="relative">
+              <Link
+                to="/student/$studentId"
+                params={{ studentId: s.id }}
+                className="group flex h-full flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+              >
+                <span className="flex size-10 items-center justify-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
+                  {s.initials}
+                </span>
+                <span className="mt-3 font-display text-base font-bold leading-tight">
+                  {s.name}
+                </span>
+                <span className="mt-1 flex items-center text-xs text-muted-foreground">
+                  {freeCount} free {freeCount === 1 ? "period" : "periods"}
+                  <ChevronRight className="ml-auto size-4 text-primary transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+              {admin && community ? (
+                <button
+                  type="button"
+                  onClick={() => void handleRemove(s.rowId, s.name)}
+                  className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-destructive/50 bg-destructive/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-destructive"
+                >
+                  <Trash2 className="size-3" /> Remove
+                </button>
+              ) : null}
+            </div>
           );
         })}
       </div>

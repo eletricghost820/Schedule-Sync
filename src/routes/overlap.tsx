@@ -5,11 +5,11 @@ import {
   PERIOD_LABEL,
   PERIOD_ORDER,
   PERIOD_SHORT,
-  STUDENTS,
   classKey,
   type PeriodId,
   type Student,
 } from "@/data/schedule";
+import { useAllStudents } from "@/lib/community";
 import { WednesdayNote } from "@/components/WednesdayNote";
 
 const title = "Class Overlap — Schedule Sync";
@@ -34,10 +34,11 @@ type Entry = { student: Student; teacher: string; room: string; days?: string | 
 const PICKER_ORDER: PeriodId[] = [...PERIOD_ORDER.filter((p) => p !== "HR"), "HR"];
 
 function Overlap() {
+  const { students } = useAllStudents();
   const [period, setPeriod] = useState<PeriodId>("01");
 
   const groups = new Map<string, { label: string; entries: Entry[] }>();
-  for (const student of STUDENTS) {
+  for (const student of students) {
     const slot = student.slots[period];
     if (!slot) continue;
     const arrangements = [
