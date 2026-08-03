@@ -14,7 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      community_schedules: {
+        Row: {
+          counselor: string | null
+          created_at: string
+          id: string
+          initials: string
+          name: string
+          slots: Json
+        }
+        Insert: {
+          counselor?: string | null
+          created_at?: string
+          id?: string
+          initials: string
+          name: string
+          slots?: Json
+        }
+        Update: {
+          counselor?: string | null
+          created_at?: string
+          id?: string
+          initials?: string
+          name?: string
+          slots?: Json
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
