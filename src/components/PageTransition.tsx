@@ -10,42 +10,37 @@ const IN_MS = 170;
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [shown, setShown] = useState<{ key: string; node: ReactNode }>({
-    key: pathname,
-    node: children,
-  });
+  const [shownPath, setShownPath] = useState(pathname);
   const [phase, setPhase] = useState<"in" | "out">("in");
   const pending = useRef<ReactNode>(children);
+  const shownNode = useRef<ReactNode>(children);
 
   pending.current = children;
+  if (shownPath === pathname) shownNode.current = children;
 
   useEffect(() => {
-    if (pathname === shown.key) {
-      // Same route, content may have re-rendered — keep it fresh.
-      setShown({ key: pathname, node: pending.current });
-      return;
-    }
+    if (pathname === shownPath) return;
     setPhase("out");
     const swap = window.setTimeout(() => {
-      setShown({ key: pathname, node: pending.current });
+      shownNode.current = pending.current;
+      setShownPath(pathname);
       setPhase("in");
     }, OUT_MS);
     return () => window.clearTimeout(swap);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, children]);
+  }, [pathname, shownPath]);
 
   return (
     <div
-      key={shown.key}
       style={{
         transitionDuration: `${phase === "out" ? OUT_MS : IN_MS}ms`,
         transitionTimingFunction: "cubic-bezier(0.22, 1, 0.36, 1)",
-        transitionProperty: "opacity, transform, filter",
+        transitionProperty: "opacity, transform",
         opacity: phase === "out" ? 0 : 1,
-        transform: phase === "out" ? "translateY(10px) scale(0.99)" : "none",
+        transform: phase === "out" ? "translateY(10px) scale(0.995)" : "none",
+        willChange: "opacity, transform",
       }}
     >
-      {shown.node}
+      {shownNode.current}
     </div>
   );
 }
