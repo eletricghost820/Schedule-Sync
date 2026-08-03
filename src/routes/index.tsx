@@ -123,37 +123,54 @@ function Index() {
       </section>
 
       <section>
-        <h2 className="font-display text-xl font-bold uppercase tracking-tight">
-          The Crew
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="font-display text-xl font-bold uppercase tracking-tight">
+            The Crew
+          </h2>
+          <div className="ml-auto">
+            <AdminControl />
+          </div>
+        </div>
         <p className="mt-1 text-sm text-muted-foreground">
           Tap a friend to see their full day, period by period.
+          {admin ? " Admin mode is on — you can remove added schedules." : ""}
         </p>
       </section>
 
       <div className="grid grid-cols-2 gap-3">
-        {STUDENTS.map((s) => {
+        {students.map((s) => {
           const freeCount = PERIOD_ORDER.filter(
             (p) => p !== "HR" && isFree(s.slots[p]),
           ).length;
+          const community = isCommunityStudent(s);
           return (
-            <Link
-              key={s.id}
-              to="/student/$studentId"
-              params={{ studentId: s.id }}
-              className="group flex flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
-            >
-              <span className="flex size-10 items-center justify-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
-                {s.initials}
-              </span>
-              <span className="mt-3 font-display text-base font-bold leading-tight">
-                {s.name}
-              </span>
-              <span className="mt-1 flex items-center text-xs text-muted-foreground">
-                {freeCount} free {freeCount === 1 ? "period" : "periods"}
-                <ChevronRight className="ml-auto size-4 text-primary transition-transform group-hover:translate-x-0.5" />
-              </span>
-            </Link>
+            <div key={s.id} className="relative">
+              <Link
+                to="/student/$studentId"
+                params={{ studentId: s.id }}
+                className="group flex h-full flex-col justify-between rounded-xl border border-border bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"
+              >
+                <span className="flex size-10 items-center justify-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
+                  {s.initials}
+                </span>
+                <span className="mt-3 font-display text-base font-bold leading-tight">
+                  {s.name}
+                </span>
+                <span className="mt-1 flex items-center text-xs text-muted-foreground">
+                  {freeCount} free {freeCount === 1 ? "period" : "periods"}
+                  <ChevronRight className="ml-auto size-4 text-primary transition-transform group-hover:translate-x-0.5" />
+                </span>
+              </Link>
+              {admin && community ? (
+                <button
+                  type="button"
+                  onClick={() => void handleRemove(s.rowId, s.name)}
+                  className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-destructive/50 bg-destructive/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-destructive"
+                >
+                  <Trash2 className="size-3" /> Remove
+                </button>
+              ) : null}
+            </div>
           );
         })}
       </div>
