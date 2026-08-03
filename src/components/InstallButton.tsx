@@ -108,7 +108,13 @@ export function InstallButton({ className = "" }: { className?: string }) {
               </button>
             </div>
 
-            <ol className="mt-5 space-y-3 text-sm">
+            <p className="mt-4 rounded-lg border border-primary/40 bg-primary/10 p-3 text-xs font-semibold leading-relaxed text-primary">
+              On iPhone &amp; iPad this only works in{" "}
+              <span className="underline underline-offset-2">Safari</span> — Chrome, Firefox and
+              other browsers can&apos;t add it to your Home Screen.
+            </p>
+
+            <ol className="mt-4 space-y-3 text-sm">
               {(isIOS
                 ? [
                     <>
@@ -147,12 +153,6 @@ export function InstallButton({ className = "" }: { className?: string }) {
               ))}
             </ol>
 
-            {isIOS && (
-              <p className="mt-4 rounded-lg border border-border bg-secondary/50 p-3 text-xs leading-relaxed text-muted-foreground">
-                Heads up: on iPhone this only works in <span className="font-semibold">Safari</span>,
-                not Chrome.
-              </p>
-            )}
           </div>
         </div>
       )}
