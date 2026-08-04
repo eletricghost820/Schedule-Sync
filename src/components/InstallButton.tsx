@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import { Download, Share, Plus, X } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
+import { Modal } from "@/components/Modal";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -71,18 +71,13 @@ export function InstallButton({ className = "" }: { className?: string }) {
         Install Schedule Sync
       </button>
 
-      {showSheet && createPortal(
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-background/70 p-3 backdrop-blur-sm sm:items-center"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Install Schedule Sync"
-          onClick={() => setShowSheet(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-2xl border border-border bg-card p-5 shadow-xl"
-            onClick={(e) => e.stopPropagation()}
-          >
+      <Modal
+        open={showSheet}
+        onClose={() => setShowSheet(false)}
+        align="bottom"
+        label="Install Schedule Sync"
+      >
+        <div className="w-full rounded-2xl border border-border bg-card p-5 shadow-xl">
             <div className="flex items-center gap-3">
               <img
                 src={logoAsset.url}
@@ -154,10 +149,8 @@ export function InstallButton({ className = "" }: { className?: string }) {
               ))}
             </ol>
 
-          </div>
-        </div>,
-        document.body,
-      )}
+        </div>
+      </Modal>
     </>
   );
 }
