@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { Shield, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { verifyAdmin } from "@/lib/schedule.functions";
 import { useAdminMode } from "@/hooks/useAdminMode";
+import { Modal } from "@/components/Modal";
 
 export function AdminControl() {
   const { admin, enable, disable } = useAdminMode();
@@ -67,18 +67,11 @@ export function AdminControl() {
         <Shield className="size-4" />
       </button>
 
-      {open && createPortal(
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => setOpen(false)}
+      <Modal open={open} onClose={() => setOpen(false)} label="Admin password">
+        <form
+          onSubmit={submit}
+          className="mx-auto w-full max-w-xs rounded-2xl border border-border bg-card p-5 shadow-xl"
         >
-          <form
-            onSubmit={submit}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-xs rounded-2xl border border-border bg-card p-5 shadow-xl"
-          >
             <p className="font-display text-base font-bold">Admin password</p>
             <p className="mt-1 text-xs text-muted-foreground">
               Unlocks removing schedules from the site.
@@ -118,10 +111,8 @@ export function AdminControl() {
                 {busy ? "Checking…" : "Unlock"}
               </button>
             </div>
-          </form>
-        </div>,
-        document.body,
-      )}
+        </form>
+      </Modal>
     </>
   );
 }
