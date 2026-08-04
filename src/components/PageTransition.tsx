@@ -37,7 +37,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
         transitionProperty: "opacity, transform",
         opacity: phase === "out" ? 0 : 1,
         transform: phase === "out" ? "translateY(10px) scale(0.995)" : "none",
-        willChange: "opacity, transform",
+        willChange: phase === "out" ? "opacity, transform" : "auto",
       }}
     >
       {shownNode.current}

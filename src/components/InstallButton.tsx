@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { Download, Share, Plus, X } from "lucide-react";
 import logoAsset from "@/assets/logo.png.asset.json";
 
@@ -70,7 +71,7 @@ export function InstallButton({ className = "" }: { className?: string }) {
         Install Schedule Sync
       </button>
 
-      {showSheet && (
+      {showSheet && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-end justify-center bg-background/70 p-3 backdrop-blur-sm sm:items-center"
           role="dialog"
@@ -154,7 +155,8 @@ export function InstallButton({ className = "" }: { className?: string }) {
             </ol>
 
           </div>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

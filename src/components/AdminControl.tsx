@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useServerFn } from "@tanstack/react-start";
 import { Shield, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
@@ -66,7 +67,7 @@ export function AdminControl() {
         <Shield className="size-4" />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-background/70 p-4 backdrop-blur-sm"
           role="dialog"
@@ -118,7 +119,8 @@ export function AdminControl() {
               </button>
             </div>
           </form>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );
