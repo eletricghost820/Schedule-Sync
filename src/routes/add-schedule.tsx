@@ -67,10 +67,32 @@ function normalizeSlots(raw: Record<string, unknown>): Partial<Record<PeriodId, 
   return out;
 }
 
+// Screenshots straight off a phone are far too large to POST to the server
+// (multi-MB base64 payloads fail before the AI ever sees them), so downscale
+// and re-encode as JPEG in the browser first.
 function readFile(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
+    reader.onload = () => {
+      const dataUrl = String(reader.result);
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 1400;
+        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          resolve(dataUrl);
+          return;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.8));
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    };
     reader.onerror = () => reject(new Error("Could not read that file"));
     reader.readAsDataURL(file);
   });
@@ -97,8 +119,8 @@ function AddSchedule() {
       toast.error("Please choose an image file.");
       return;
     }
-    if (picked.some((f) => f.size > 6_000_000)) {
-      toast.error("Images need to be under 6 MB.");
+    if (picked.some((f) => f.size > 15_000_000)) {
+      toast.error("Images need to be under 15 MB.");
       return;
     }
     const urls = await Promise.all(picked.map(readFile));
