@@ -70,6 +70,19 @@ function normalizeSlots(raw: Record<string, unknown>): Partial<Record<PeriodId, 
 // Screenshots straight off a phone are far too large to POST to the server
 // (multi-MB base64 payloads fail before the AI ever sees them), so downscale
 // and re-encode as JPEG in the browser first.
+const MAX_UPLOAD_CHARS = 700_000;
+
+function encode(img: HTMLImageElement, maxDim: number, quality: number) {
+  const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(img.width * scale));
+  canvas.height = Math.max(1, Math.round(img.height * scale));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", quality);
+}
+
 function readFile(file: File) {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -77,18 +90,23 @@ function readFile(file: File) {
       const dataUrl = String(reader.result);
       const img = new Image();
       img.onload = () => {
-        const maxDim = 1400;
-        const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.round(img.width * scale);
-        canvas.height = Math.round(img.height * scale);
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          resolve(dataUrl);
-          return;
+        // Step the image down until the base64 payload is comfortably small
+        // enough to POST — oversized bodies are rejected before the AI runs.
+        const steps: [number, number][] = [
+          [1400, 0.75],
+          [1200, 0.65],
+          [1000, 0.6],
+          [850, 0.5],
+          [700, 0.45],
+        ];
+        let best: string | null = null;
+        for (const [dim, q] of steps) {
+          const out = encode(img, dim, q);
+          if (!out) break;
+          best = out;
+          if (out.length <= MAX_UPLOAD_CHARS) break;
         }
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL("image/jpeg", 0.8));
+        resolve(best ?? dataUrl);
       };
       img.onerror = () => resolve(dataUrl);
       img.src = dataUrl;
@@ -131,20 +149,37 @@ function AddSchedule() {
     if (!images.length) return;
     setReading(true);
     try {
-      const res = await runExtract({ data: { images } });
-      const slots = normalizeSlots((res.slots ?? {}) as Record<string, unknown>);
+      // One image per request: a single big multi-image body is rejected by the
+      // server before the AI ever runs.
+      let name = "";
+      let counselor = "";
+      const merged: Record<string, unknown> = {};
+      for (const image of images) {
+        const res = await runExtract({ data: { images: [image] } });
+        if (!name && res.name) name = res.name;
+        if (!counselor && res.counselor) counselor = res.counselor;
+        for (const [period, slot] of Object.entries(res.slots ?? {})) {
+          if (!merged[period]) merged[period] = slot;
+        }
+      }
+      const slots = normalizeSlots(merged);
       if (Object.keys(slots).length === 0) {
         toast.error("No periods found in that screenshot. Try a clearer image.");
         return;
       }
       setDraft({
-        name: res.name ?? "",
-        counselor: res.counselor ?? "",
+        name,
+        counselor,
         slots,
       });
       toast.success("Schedule read — check it over before saving.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong reading that image.");
+      const raw = err instanceof Error ? err.message : "";
+      const friendly =
+        !raw || raw.includes("<") || raw.length > 160
+          ? "That upload was too large or the server hiccuped. Try one screenshot at a time."
+          : raw;
+      toast.error(friendly);
     } finally {
       setReading(false);
     }
