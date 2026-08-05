@@ -114,7 +114,7 @@ function AddSchedule() {
     if (!files?.length) return;
     const picked = Array.from(files)
       .filter((f) => f.type.startsWith("image/"))
-      .slice(0, 3 - images.length);
+      .slice(0, 5 - images.length);
     if (!picked.length) {
       toast.error("Please choose an image file.");
       return;
@@ -124,7 +124,7 @@ function AddSchedule() {
       return;
     }
     const urls = await Promise.all(picked.map(readFile));
-    setImages((prev) => [...prev, ...urls].slice(0, 3));
+    setImages((prev) => [...prev, ...urls].slice(0, 5));
   }
 
   async function extract() {
@@ -215,7 +215,7 @@ function AddSchedule() {
               Drop a screenshot or tap to upload
             </p>
             <p className="mt-1 text-xs text-muted-foreground">
-              PNG or JPG, up to 3 images (if your schedule is split across screenshots)
+              PNG or JPG, up to 5 images (if your schedule is split across screenshots)
             </p>
             <input
               ref={inputRef}
@@ -245,7 +245,7 @@ function AddSchedule() {
                   </button>
                 </div>
               ))}
-              {images.length < 3 && (
+              {images.length < 5 && (
                 <button
                   type="button"
                   onClick={() => inputRef.current?.click()}
