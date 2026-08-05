@@ -6,7 +6,7 @@ export const extractSchedule = createServerFn({ method: "POST" })
     z
       .object({
         images: z
-          .array(z.string().startsWith("data:image/").max(8_000_000))
+          .array(z.string().startsWith("data:image/").max(3_000_000))
           .min(1)
           .max(3),
       })
