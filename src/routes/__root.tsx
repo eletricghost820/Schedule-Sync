@@ -26,7 +26,7 @@ function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-20 border-b border-border bg-card/80 text-foreground backdrop-blur">
-        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3">
+        <div className="mx-auto flex max-w-3xl items-center gap-2 px-4 py-3 lg:max-w-5xl lg:px-6 xl:max-w-6xl">
           <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold tracking-tight">
             <img
               src={logoAsset.url}
@@ -43,13 +43,13 @@ function SiteChrome({ children }: { children: ReactNode }) {
             Class of 2030
           </span>
         </div>
-        <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-2">
+        <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-2 lg:max-w-5xl lg:gap-2 lg:px-6 xl:max-w-6xl">
           {NAV.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               activeOptions={{ exact: item.to === "/" }}
-              className="flex-1 whitespace-nowrap rounded-md px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="flex-1 whitespace-nowrap rounded-md px-3 py-2 text-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground lg:flex-none lg:px-5"
               activeProps={{ className: "bg-primary text-primary-foreground hover:text-primary-foreground" }}
             >
               {item.label}
@@ -57,7 +57,9 @@ function SiteChrome({ children }: { children: ReactNode }) {
           ))}
         </nav>
       </header>
-      <main className="mx-auto max-w-3xl px-4 pb-16 pt-5">{children}</main>
+      <main className="mx-auto max-w-3xl px-4 pb-16 pt-5 lg:max-w-5xl lg:px-6 lg:pt-8 xl:max-w-6xl">
+        {children}
+      </main>
     </div>
   );
 }
