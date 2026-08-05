@@ -54,7 +54,7 @@ function Index() {
   );
   return (
     <div className="space-y-8">
-      <section className="relative -mx-4 overflow-hidden border-b border-border px-4 py-12 sm:-mx-6 sm:px-6">
+      <section className="relative -mx-4 overflow-hidden border-b border-border px-4 py-12 sm:-mx-6 sm:px-6 lg:rounded-3xl lg:border lg:px-12 lg:py-20">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-70"
@@ -78,13 +78,13 @@ function Index() {
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
             Class of 2030
           </span>
-          <h1 className="mt-4 font-display text-4xl font-extrabold uppercase leading-[0.92] tracking-tight sm:text-6xl">
+          <h1 className="mt-4 font-display text-4xl font-extrabold uppercase leading-[0.92] tracking-tight sm:text-6xl lg:text-7xl xl:text-8xl">
             Schedule
           </h1>
-          <p className="mt-1 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-primary sm:text-6xl">
+          <p className="mt-1 font-display text-4xl font-extrabold uppercase leading-[0.95] tracking-tight text-primary sm:text-6xl lg:text-7xl xl:text-8xl">
             Sync
           </p>
-          <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base lg:max-w-xl lg:text-lg">
             Full daily schedules for all {students.length} of us — plus a free
             period finder and shared class matcher, so nobody eats lunch alone.
           </p>
@@ -105,7 +105,7 @@ function Index() {
             <InstallButton />
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:gap-x-10 lg:text-xs">
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
               {students.length} friends tracked
@@ -137,7 +137,7 @@ function Index() {
         </p>
       </section>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
         {students.map((s) => {
           const freeCount = PERIOD_ORDER.filter(
             (p) => p !== "HR" && isFree(s.slots[p]),
