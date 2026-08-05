@@ -149,20 +149,37 @@ function AddSchedule() {
     if (!images.length) return;
     setReading(true);
     try {
-      const res = await runExtract({ data: { images } });
-      const slots = normalizeSlots((res.slots ?? {}) as Record<string, unknown>);
+      // One image per request: a single big multi-image body is rejected by the
+      // server before the AI ever runs.
+      let name = "";
+      let counselor = "";
+      const merged: Record<string, unknown> = {};
+      for (const image of images) {
+        const res = await runExtract({ data: { images: [image] } });
+        if (!name && res.name) name = res.name;
+        if (!counselor && res.counselor) counselor = res.counselor;
+        for (const [period, slot] of Object.entries(res.slots ?? {})) {
+          if (!merged[period]) merged[period] = slot;
+        }
+      }
+      const slots = normalizeSlots(merged);
       if (Object.keys(slots).length === 0) {
         toast.error("No periods found in that screenshot. Try a clearer image.");
         return;
       }
       setDraft({
-        name: res.name ?? "",
-        counselor: res.counselor ?? "",
+        name,
+        counselor,
         slots,
       });
       toast.success("Schedule read — check it over before saving.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Something went wrong reading that image.");
+      const raw = err instanceof Error ? err.message : "";
+      const friendly =
+        !raw || raw.includes("<") || raw.length > 160
+          ? "That upload was too large or the server hiccuped. Try one screenshot at a time."
+          : raw;
+      toast.error(friendly);
     } finally {
       setReading(false);
     }
