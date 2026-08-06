@@ -81,20 +81,20 @@ export type Student = {
 
 export const FREE_KEYWORDS = ["lunch", "study hall"];
 
-function free(name: string) {
+export function isFreeName(name: string) {
   return FREE_KEYWORDS.some((k) => name.toLowerCase().includes(k));
 }
 
 /** Free if any arrangement that period is Lunch or Study Hall. */
 export function isFree(slot?: Slot): boolean {
   if (!slot) return true;
-  return free(slot.className) || (slot.alt ? free(slot.alt.className) : false);
+  return isFreeName(slot.className) || (slot.alt ? isFreeName(slot.alt.className) : false);
 }
 
 /** Free only on some days of the week. */
 export function isPartiallyFree(slot?: Slot): boolean {
   if (!slot || !slot.alt) return false;
-  return free(slot.className) !== free(slot.alt.className);
+  return isFreeName(slot.className) !== isFreeName(slot.alt.className);
 }
 
 export const STUDENTS: Student[] = [
