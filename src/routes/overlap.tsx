@@ -1,12 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BELL_TIMES,
   PERIOD_LABEL,
   PERIOD_ORDER,
-  PERIOD_SHORT,
   classKey,
+  isFreeName,
   type PeriodId,
+  type Slot,
   type Student,
 } from "@/data/schedule";
 import { useAllStudents } from "@/lib/community";
@@ -14,7 +15,7 @@ import { WednesdayNote } from "@/components/WednesdayNote";
 
 const title = "Class Overlap — Schedule Sync";
 const description =
-  "Pick a period and see which friends share the same class, teacher, and room during it.";
+  "Pick your name and see, period by period, who shares each of your classes.";
 
 export const Route = createFileRoute("/overlap")({
   head: () => ({
@@ -28,138 +29,155 @@ export const Route = createFileRoute("/overlap")({
   component: Overlap,
 });
 
-type Entry = { student: Student; teacher: string; room: string; days?: string | undefined };
+type Match = { student: Student; teacher: string; room: string; days?: string | undefined };
 
-/** Homeroom shown last in the period picker. */
-const PICKER_ORDER: PeriodId[] = [...PERIOD_ORDER.filter((p) => p !== "HR"), "HR"];
+function arrangements(slot: Slot) {
+  return [
+    { className: slot.className, teacher: slot.teacher, room: slot.room, days: slot.days },
+    ...(slot.alt ? [slot.alt] : []),
+  ];
+}
 
 function Overlap() {
-  const { students } = useAllStudents();
-  const [period, setPeriod] = useState<PeriodId>("01");
+  const { students, isLoading } = useAllStudents();
+  const [meId, setMeId] = useState<string>("");
 
-  const groups = new Map<string, { label: string; entries: Entry[] }>();
-  for (const student of students) {
-    const slot = student.slots[period];
-    if (!slot) continue;
-    const arrangements = [
-      { className: slot.className, teacher: slot.teacher, room: slot.room, days: slot.days },
-      ...(slot.alt ? [slot.alt] : []),
-    ];
-    for (const a of arrangements) {
-      const key = classKey(a.className);
-      const g = groups.get(key) ?? { label: a.className, entries: [] };
-      g.entries.push({ student, teacher: a.teacher, room: a.room, days: a.days });
-      groups.set(key, g);
-    }
-  }
+  const me = students.find((s) => s.id === meId);
 
-  const sorted = [...groups.values()].sort((a, b) => b.entries.length - a.entries.length);
-  const shared = sorted.filter((g) => g.entries.length > 1);
-  const solo = sorted.filter((g) => g.entries.length === 1);
+  const rows = useMemo(() => {
+    if (!me) return [];
+    return PERIOD_ORDER.map((period) => {
+      const slot = me.slots[period];
+      const mine = slot ? arrangements(slot) : [];
+      const blocks = mine.map((a) => {
+        const matches: Match[] = [];
+        for (const other of students) {
+          if (other.id === me.id) continue;
+          const os = other.slots[period];
+          if (!os) continue;
+          for (const b of arrangements(os)) {
+            if (classKey(b.className) === classKey(a.className)) {
+              matches.push({ student: other, teacher: b.teacher, room: b.room, days: b.days });
+              break;
+            }
+          }
+        }
+        return { ...a, matches };
+      });
+      return { period, blocks };
+    });
+  }, [me, students]);
 
   return (
     <div className="space-y-4">
       <section>
         <h1 className="text-2xl font-bold">Class Overlap</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pick a period to see who&rsquo;s together.
+          Pick your name to see who&rsquo;s in each of your classes.
         </p>
       </section>
 
-      <div className="flex flex-wrap gap-2">
-        {PICKER_ORDER.map((p) => (
-          <button
-            key={p}
-            type="button"
-            onClick={() => setPeriod(p)}
-            className={`min-w-11 rounded-lg border px-3 py-2 font-display text-sm font-bold transition-colors ${
-              p === period
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card text-foreground hover:border-primary/50"
-            }`}
-          >
-            {PERIOD_SHORT[p]}
-          </button>
-        ))}
-      </div>
+      <label className="block space-y-1">
+        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Your name
+        </span>
+        <select
+          value={meId}
+          onChange={(e) => setMeId(e.target.value)}
+          className="w-full rounded-xl border border-border bg-card px-3 py-3 text-base font-medium text-foreground outline-none focus:border-primary"
+        >
+          <option value="">
+            {isLoading ? "Loading names…" : "Select your name…"}
+          </option>
+          {students.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
-      <div className="rounded-lg bg-secondary px-3 py-2 text-sm">
-        <span className="font-display font-bold">{PERIOD_LABEL[period]}</span>
-        <span className="text-muted-foreground"> · {BELL_TIMES[period]}</span>
-      </div>
-
-      <section className="space-y-3">
-        <h2 className="text-lg font-bold">Shared classes</h2>
-        {shared.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Nobody shares a class this period — everyone&rsquo;s on their own.
-          </p>
-        ) : (
-          shared.map((g) => <GroupCard key={g.label} label={g.label} entries={g.entries} shared />)
-        )}
-      </section>
-
-      {solo.length > 0 ? (
+      {!me ? (
+        <p className="rounded-xl border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
+          Choose your name above. Don&rsquo;t see it?{" "}
+          <Link to="/add-schedule" className="font-semibold text-primary">
+            Add your schedule
+          </Link>
+          .
+        </p>
+      ) : (
         <section className="space-y-3">
-          <h2 className="text-lg font-bold">Solo</h2>
-          {solo.map((g) => (
-            <GroupCard key={g.label} label={g.label} entries={g.entries} />
+          {rows.map(({ period, blocks }) => (
+            <div key={period} className="rounded-xl border border-border bg-card p-3 shadow-sm">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="font-display text-sm font-bold">{PERIOD_LABEL[period]}</span>
+                <span className="text-[11px] text-muted-foreground">{BELL_TIMES[period]}</span>
+              </div>
+
+              {blocks.length === 0 ? (
+                <p className="mt-1 text-sm text-muted-foreground">No class this period.</p>
+              ) : (
+                blocks.map((b) => (
+                  <div key={b.className + b.teacher} className="mt-2">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <h3 className="text-base font-semibold">
+                        {b.className}
+                        {b.days ? (
+                          <span className="ml-1 text-xs font-normal text-muted-foreground">
+                            ({b.days})
+                          </span>
+                        ) : null}
+                      </h3>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          b.matches.length > 0
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-secondary text-muted-foreground"
+                        }`}
+                      >
+                        {b.matches.length > 0 ? `+${b.matches.length}` : "just you"}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {b.teacher} · {b.room}
+                    </p>
+
+                    {b.matches.length === 0 ? (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {isFreeName(b.className)
+                          ? "Free period — nobody else is free with you here."
+                          : "No overlap — nobody else has this class."}
+                      </p>
+                    ) : (
+                      <ul className="mt-2 space-y-1">
+                        {b.matches.map((m) => (
+                          <li key={m.student.id}>
+                            <Link
+                              to="/student/$studentId"
+                              params={{ studentId: m.student.id }}
+                              className="flex items-center gap-2 text-sm hover:text-primary"
+                            >
+                              <span className="flex size-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground">
+                                {m.student.initials}
+                              </span>
+                              <span className="font-medium">{m.student.name}</span>
+                              <span className="ml-auto text-xs text-muted-foreground">
+                                {m.room}
+                              </span>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
           ))}
         </section>
-      ) : null}
+      )}
 
       <WednesdayNote />
-    </div>
-  );
-}
-
-function GroupCard({
-  label,
-  entries,
-  shared,
-}: {
-  label: string;
-  entries: Entry[];
-  shared?: boolean;
-}) {
-  const teachers = [...new Set(entries.map((e) => `${e.teacher} · ${e.room}`))];
-  return (
-    <div
-      className={`rounded-xl border bg-card p-3 shadow-sm ${
-        shared ? "border-primary/40" : "border-border"
-      }`}
-    >
-      <div className="flex items-baseline justify-between gap-2">
-        <h3 className="font-display text-base font-bold">{label}</h3>
-        <span
-          className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-            shared ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
-          }`}
-        >
-          {entries.length} {entries.length === 1 ? "friend" : "friends"}
-        </span>
-      </div>
-      <p className="mt-0.5 text-xs text-muted-foreground">{teachers.join("  |  ")}</p>
-      <ul className="mt-2 space-y-1">
-        {entries.map((e) => (
-          <li key={e.student.id + e.teacher}>
-            <Link
-              to="/student/$studentId"
-              params={{ studentId: e.student.id }}
-              className="flex items-center gap-2 text-sm hover:text-primary"
-            >
-              <span className="flex size-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground">
-                {e.student.initials}
-              </span>
-              <span className="font-medium">{e.student.name}</span>
-              {e.days ? (
-                <span className="text-xs text-muted-foreground">({e.days})</span>
-              ) : null}
-              <span className="ml-auto text-xs text-muted-foreground">{e.room}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }
