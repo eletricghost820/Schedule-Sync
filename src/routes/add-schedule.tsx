@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { Check, ImagePlus, Loader2, RotateCcw, Sparkles, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -10,7 +9,6 @@ import {
   type PeriodId,
   type Slot,
 } from "@/data/schedule";
-import { extractSchedule } from "@/lib/schedule.functions";
 import { initialsFor, useRefreshCommunity } from "@/lib/community";
 import { supabase } from "@/integrations/supabase/client";
 import { WednesdayNote } from "@/components/WednesdayNote";
@@ -116,9 +114,33 @@ function readFile(file: File) {
   });
 }
 
+type ExtractResponse = {
+  name?: string | null;
+  counselor?: string | null;
+  slots?: Record<string, unknown>;
+  error?: string;
+};
+
+async function extractOne(image: string): Promise<ExtractResponse> {
+  const res = await fetch("/api/public/extract-schedule", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ images: [image] }),
+  });
+  let body: ExtractResponse | null = null;
+  try {
+    body = (await res.json()) as ExtractResponse;
+  } catch {
+    body = null;
+  }
+  if (!res.ok || body?.error) {
+    throw new Error(body?.error || `Could not read that screenshot (${res.status}).`);
+  }
+  return body ?? {};
+}
+
 function AddSchedule() {
   const navigate = useNavigate();
-  const runExtract = useServerFn(extractSchedule);
   const refresh = useRefreshCommunity();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -155,7 +177,7 @@ function AddSchedule() {
       let counselor = "";
       const merged: Record<string, unknown> = {};
       for (const image of images) {
-        const res = await runExtract({ data: { images: [image] } });
+        const res = await extractOne(image);
         if (!name && res.name) name = res.name;
         if (!counselor && res.counselor) counselor = res.counselor;
         for (const [period, slot] of Object.entries(res.slots ?? {})) {
@@ -175,11 +197,7 @@ function AddSchedule() {
       toast.success("Schedule read — check it over before saving.");
     } catch (err) {
       const raw = err instanceof Error ? err.message : "";
-      const friendly =
-        !raw || raw.includes("<") || raw.length > 160
-          ? "That upload was too large or the server hiccuped. Try one screenshot at a time."
-          : raw;
-      toast.error(friendly);
+      toast.error(raw && !raw.includes("<") ? raw : "Could not read that screenshot. Try again.");
     } finally {
       setReading(false);
     }
