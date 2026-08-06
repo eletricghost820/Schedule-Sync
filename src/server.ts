@@ -29,6 +29,24 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   if (!isH3SwallowedErrorBody(body)) return response;
 
   console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  return errorResponse(response.url);
+}
+
+// API and server-function callers must always get JSON — an HTML error page is
+// unparseable on the client and hides the real cause.
+function wantsJson(request: Request): boolean {
+  const path = new URL(request.url).pathname;
+  return path.startsWith("/api/") || path.startsWith("/_serverFn");
+}
+
+function jsonError(message: string): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status: 500,
+    headers: { "content-type": "application/json; charset=utf-8" },
+  });
+}
+
+function errorResponse(_url?: string): Response {
   return new Response(renderErrorPage(), {
     status: 500,
     headers: { "content-type": "text/html; charset=utf-8" },
@@ -49,9 +67,17 @@ export default {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
+      if (wantsJson(request)) return response;
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
       console.error(error);
+      if (wantsJson(request)) {
+        return jsonError(
+          error instanceof Error && error.message
+            ? error.message
+            : "The server hit an unexpected error.",
+        );
+      }
       return new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },
