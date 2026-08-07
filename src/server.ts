@@ -15,15 +15,22 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return errorResponse(response.url);
 }
 
-// API and server-function callers must always get JSON — an HTML error page is
-// unparseable on the client and hides the real cause.
+// API, server functions, and actions expecting JSON must always get JSON.
+// An HTML error page is unparseable on the client and hides the real cause.
 function wantsJson(request: Request): boolean {
   const path = new URL(request.url).pathname;
-  return path.startsWith("/api/") || path.startsWith("/_serverFn");
+  const accept = request.headers.get("accept") ?? "";
+  
+  return (
+    path.startsWith("/api/") ||
+    path.startsWith("/_serverFn") ||
+    path.includes("server") ||
+    accept.includes("application/json")
+  );
 }
 
 function jsonError(message: string): Response {
-  return new Response(JSON.stringify({ error: message }), {
+  return new Response(JSON.stringify({ error: message, success: false }), {
     status: 500,
     headers: { "content-type": "application/json; charset=utf-8" },
   });
@@ -47,8 +54,6 @@ function isH3SwallowedErrorBody(body: string): boolean {
 
 // Keep a static import of the framework handler and export through createServerEntry
 // so AsyncLocalStorage is shared with server functions, middleware, and loaders.
-// A dynamic import("@tanstack/react-start/server-entry") can load a second module
-// graph and break getRequest() / other server context utilities at runtime.
 export default createServerEntry({
   async fetch(request: Request, ...rest: unknown[]) {
     try {
@@ -56,7 +61,7 @@ export default createServerEntry({
       if (wantsJson(request)) return response;
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
-      console.error(error);
+      console.error("Server fetch error:", error);
       if (wantsJson(request)) {
         return jsonError(
           error instanceof Error && error.message
