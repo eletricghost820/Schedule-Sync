@@ -1,4 +1,3 @@
-this is what it is right now.
 import "./lib/error-capture";
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
