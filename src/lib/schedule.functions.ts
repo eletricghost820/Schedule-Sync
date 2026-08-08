@@ -3,11 +3,24 @@ import { z } from "zod";
 
 function adminPasswordMatches(input: string): boolean {
   const expected = process.env["ADMIN_PASSWORD"];
-  if (!expected) return false;
-  if (input.length !== expected.length) return false;
+  console.log("[verifyAdmin] Checking password", {
+    inputLength: input.length,
+    expectedLength: expected?.length,
+    hasExpected: !!expected,
+  });
+  if (!expected) {
+    console.log("[verifyAdmin] No ADMIN_PASSWORD env var set");
+    return false;
+  }
+  if (input.length !== expected.length) {
+    console.log("[verifyAdmin] Password length mismatch");
+    return false;
+  }
   let diff = 0;
   for (let i = 0; i < expected.length; i++) diff |= input.charCodeAt(i) ^ expected.charCodeAt(i);
-  return diff === 0;
+  const matches = diff === 0;
+  console.log("[verifyAdmin] Comparison result:", { matches, diff });
+  return matches;
 }
 
 export const extractSchedule = createServerFn({ method: "POST" })
@@ -31,7 +44,15 @@ export const verifyAdmin = createServerFn({ method: "POST" })
     z.object({ password: z.string().min(1).max(100) }).parse(data),
   )
   .handler(async ({ data }) => {
-    return { ok: adminPasswordMatches(data.password) };
+    try {
+      console.log("[verifyAdmin] Handler started");
+      const result = { ok: adminPasswordMatches(data.password) };
+      console.log("[verifyAdmin] Returning result:", result);
+      return result;
+    } catch (error) {
+      console.error("[verifyAdmin] Handler error:", error);
+      throw error;
+    }
   });
 
 export const removeCommunitySchedule = createServerFn({ method: "POST" })
