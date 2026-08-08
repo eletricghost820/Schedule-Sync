@@ -1,7 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { extractScheduleFromImages, adminPasswordMatches } from "./schedule.server";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+
+function adminPasswordMatches(input: string): boolean {
+  const expected = process.env["ADMIN_PASSWORD"];
+  if (!expected) return false;
+  if (input.length !== expected.length) return false;
+  let diff = 0;
+  for (let i = 0; i < expected.length; i++) diff |= input.charCodeAt(i) ^ expected.charCodeAt(i);
+  return diff === 0;
+}
 
 export const extractSchedule = createServerFn({ method: "POST" })
   .inputValidator((data: { images: string[] }) =>
@@ -15,6 +22,7 @@ export const extractSchedule = createServerFn({ method: "POST" })
       .parse(data),
   )
   .handler(async ({ data }) => {
+    const { extractScheduleFromImages } = await import("./schedule.server");
     return extractScheduleFromImages(data.images);
   });
 
@@ -32,6 +40,7 @@ export const removeCommunitySchedule = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     if (!adminPasswordMatches(data.password)) return { ok: false as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("community_schedules").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true as const };
