@@ -37,6 +37,19 @@ export const BELL_TIMES: Record<PeriodId, string> = {
   "09": "2:41–3:23 PM",
 };
 
+/** Wednesday shortened schedule — no homeroom, later start. */
+export const WEDNESDAY_BELL_TIMES: Partial<Record<PeriodId, string>> = {
+  "01": "9:40–10:14 AM",
+  "02": "10:19–10:52 AM",
+  "03": "10:57–11:31 AM",
+  "04": "11:36 AM–12:10 PM",
+  "05": "12:15–12:49 PM",
+  "06": "12:54–1:28 PM",
+  "07": "1:33–2:07 PM",
+  "08": "2:12–2:45 PM",
+  "09": "2:50–3:23 PM",
+};
+
 export const PERIOD_LABEL: Record<PeriodId, string> = {
   "01": "Per 01",
   "02": "Per 02",
@@ -327,4 +340,4 @@ export function classKey(name: string) {
 }
 
 export const WEDNESDAY_NOTE =
-  "Wednesday runs a shortened, shifted bell schedule — school starts later and periods are compressed. Times shown here are the standard Mon/Tue/Thu/Fri bells.";
+  "Wednesday runs a shortened, shifted bell schedule — first period starts at 9:40 AM, there is no homeroom, and every block is compressed. Times shown here are the standard Mon/Tue/Thu/Fri bells unless noted.";

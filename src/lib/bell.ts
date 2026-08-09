@@ -1,4 +1,9 @@
-import { BELL_TIMES, PERIOD_ORDER, type PeriodId } from "@/data/schedule";
+import {
+  BELL_TIMES,
+  PERIOD_ORDER,
+  WEDNESDAY_BELL_TIMES,
+  type PeriodId,
+} from "@/data/schedule";
 
 export type BellBlock = { period: PeriodId; start: number; end: number };
 
@@ -13,37 +18,80 @@ function parseClock(raw: string, fallbackMeridiem: "AM" | "PM"): number {
   return hour * 60 + min;
 }
 
-/** Minutes-from-midnight blocks derived from the reference bell schedule. */
-export const BELL_BLOCKS: BellBlock[] = PERIOD_ORDER.map((period) => {
-  const [rawStart = "", rawEnd = ""] = BELL_TIMES[period].split(/[–-]/);
-  const endMer = /PM/i.test(rawEnd) ? "PM" : "AM";
-  return {
-    period,
-    start: parseClock(rawStart, endMer),
-    end: parseClock(rawEnd, endMer),
-  };
-}).sort((a, b) => a.start - b.start);
+function buildBlocks(times: Partial<Record<PeriodId, string>>): BellBlock[] {
+  return PERIOD_ORDER.flatMap((period) => {
+    const raw = times[period];
+    if (!raw) return [];
+    const [rawStart = "", rawEnd = ""] = raw.split(/[–-]/);
+    const endMer = /PM/i.test(rawEnd) ? "PM" : "AM";
+    return [
+      {
+        period,
+        start: parseClock(rawStart, endMer),
+        end: parseClock(rawEnd, endMer),
+      },
+    ];
+  }).sort((a, b) => a.start - b.start);
+}
 
-export const FIRST_BLOCK = BELL_BLOCKS[0]!;
-export const LAST_BLOCK = BELL_BLOCKS[BELL_BLOCKS.length - 1]!;
+/** Minutes-from-midnight blocks for the standard Mon/Tue/Thu/Fri bells. */
+export const BELL_BLOCKS: BellBlock[] = buildBlocks(BELL_TIMES);
+
+/** Shortened Wednesday bells (no homeroom, later start). */
+export const WEDNESDAY_BLOCKS: BellBlock[] = buildBlocks(WEDNESDAY_BELL_TIMES);
+
+export function blocksForDay(day: number): BellBlock[] {
+  return day === 3 ? WEDNESDAY_BLOCKS : BELL_BLOCKS;
+}
+
+/** Bell times for a given weekday, falling back to the standard schedule. */
+export function bellTimesForDay(day: number): Partial<Record<PeriodId, string>> {
+  return day === 3 ? WEDNESDAY_BELL_TIMES : BELL_TIMES;
+}
 
 export type BellStatus =
   | { kind: "in-class"; current: BellBlock; next?: BellBlock; endsIn: number }
   | { kind: "passing"; next: BellBlock; startsIn: number }
   | { kind: "before-school"; next: BellBlock; startsIn: number }
-  | { kind: "after-school" }
-  | { kind: "weekend" };
+  | { kind: "after-school"; nextDay: string; firstBell: string }
+  | { kind: "weekend"; nextDay: string; firstBell: string };
+
+const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+function clockLabel(minutes: number): string {
+  const h24 = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  const mer = h24 >= 12 ? "PM" : "AM";
+  const h = h24 % 12 === 0 ? 12 : h24 % 12;
+  return `${h}:${String(m).padStart(2, "0")} ${mer}`;
+}
+
+/** The next weekday with classes, and when its first bell rings. */
+function nextSchoolDay(day: number): { nextDay: string; firstBell: string } {
+  let d = day;
+  for (let i = 0; i < 7; i++) {
+    d = (d + 1) % 7;
+    if (d === 0 || d === 6) continue;
+    const first = blocksForDay(d)[0];
+    return {
+      nextDay: DAY_NAMES[d]!,
+      firstBell: first ? clockLabel(first.start) : "—",
+    };
+  }
+  return { nextDay: "Monday", firstBell: "—" };
+}
 
 export function bellStatusAt(now: Date): BellStatus {
   const day = now.getDay();
-  if (day === 0 || day === 6) return { kind: "weekend" };
+  if (day === 0 || day === 6) return { kind: "weekend", ...nextSchoolDay(day) };
 
+  const blocks = blocksForDay(day);
   const mins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
 
-  for (let i = 0; i < BELL_BLOCKS.length; i++) {
-    const block = BELL_BLOCKS[i]!;
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i]!;
     if (mins >= block.start && mins < block.end) {
-      const next = BELL_BLOCKS[i + 1];
+      const next = blocks[i + 1];
       return {
         kind: "in-class",
         current: block,
@@ -57,7 +105,7 @@ export function bellStatusAt(now: Date): BellStatus {
         : { kind: "passing", next: block, startsIn: block.start - mins };
     }
   }
-  return { kind: "after-school" };
+  return { kind: "after-school", ...nextSchoolDay(day) };
 }
 
 /** "4:05" style countdown from a fractional-minute duration. */

@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { Clock } from "lucide-react";
 import {
-  BELL_TIMES,
   PERIOD_LABEL,
   type PeriodId,
   type Slot,
   isFreeName,
 } from "@/data/schedule";
-import { bellStatusAt, formatCountdown, type BellStatus } from "@/lib/bell";
+import {
+  bellStatusAt,
+  bellTimesForDay,
+  formatCountdown,
+  type BellStatus,
+} from "@/lib/bell";
 import { useAllStudents } from "@/lib/community";
 import { useHydrated } from "@/hooks/useHydrated";
 
@@ -74,6 +78,9 @@ export function NextClassCountdown() {
   );
 
   const status = useMemo(() => bellStatusAt(now), [now]);
+  const day = now.getDay();
+  const isWednesday = day === 3;
+  const times = bellTimesForDay(day);
 
   function pick(id: string) {
     setMeId(id);
@@ -103,6 +110,11 @@ export function NextClassCountdown() {
         <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
           <Clock className="size-3.5" /> {headline(status)}
         </span>
+        {hydrated && isWednesday ? (
+          <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+            Wednesday · shortened
+          </span>
+        ) : null}
         <select
           value={meId}
           onChange={(e) => pick(e.target.value)}
@@ -135,7 +147,7 @@ export function NextClassCountdown() {
             {currentPeriod ? (
               <div className="rounded-xl border border-border bg-background p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  {PERIOD_LABEL[currentPeriod]} · {BELL_TIMES[currentPeriod]}
+                  {PERIOD_LABEL[currentPeriod]} · {times[currentPeriod]}
                 </p>
                 <div className="mt-1">
                   {me ? (
@@ -150,7 +162,7 @@ export function NextClassCountdown() {
             {nextPeriod ? (
               <div className="rounded-xl border border-primary/40 bg-primary/5 p-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
-                  Up next · {PERIOD_LABEL[nextPeriod]} · {BELL_TIMES[nextPeriod]}
+                  Up next · {PERIOD_LABEL[nextPeriod]} · {times[nextPeriod]}
                 </p>
                 <div className="mt-1">
                   {me ? (
@@ -172,14 +184,16 @@ export function NextClassCountdown() {
         </>
       ) : (
         <p className="mt-4 text-sm text-muted-foreground">
-          {status.kind === "weekend"
-            ? "No bells today — see you Monday at 8:10 AM."
-            : "The day is done — first period rings at 8:10 AM tomorrow."}
+          {status.kind === "weekend" || status.kind === "after-school"
+            ? `${status.kind === "weekend" ? "No bells today" : "The day is done"} — first period rings ${status.nextDay} at ${status.firstBell}.`
+            : null}
         </p>
       )}
 
       <p className="mt-3 text-[11px] text-muted-foreground">
-        Based on the standard Mon/Tue/Thu/Fri bells. Wednesdays run shortened.
+        {isWednesday
+          ? "Using the shortened Wednesday bells — first period at 9:40 AM, no homeroom."
+          : "Using the standard Mon/Tue/Thu/Fri bells. Wednesdays run shortened."}
       </p>
     </section>
   );
