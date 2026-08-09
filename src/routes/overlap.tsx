@@ -79,7 +79,7 @@ function Overlap() {
         </p>
       </section>
 
-      <label className="block space-y-1">
+      <label className="block max-w-sm space-y-1">
         <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           Your name
         </span>
@@ -117,8 +117,9 @@ function Overlap() {
               shareTitle={`${me.name}'s class overlaps`}
             />
           </div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {rows.map(({ period, blocks }) => (
-            <div key={period} className="rounded-xl border border-border bg-card p-3 shadow-sm">
+            <div key={period} className="h-full rounded-xl border border-border bg-card p-3 shadow-sm">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="font-display text-sm font-bold">{PERIOD_LABEL[period]}</span>
                 <span className="text-[11px] text-muted-foreground">{BELL_TIMES[period]}</span>
@@ -184,6 +185,7 @@ function Overlap() {
               )}
             </div>
           ))}
+          </div>
         </section>
       )}
 
