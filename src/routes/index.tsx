@@ -94,6 +94,12 @@ function Index() {
             >
               Class overlap <ArrowRight className="size-4" />
             </Link>
+            <Link
+              to="/add-schedule"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-bold uppercase tracking-wide text-foreground transition-transform hover:-translate-y-0.5"
+            >
+              Add yours <Plus className="size-4" />
+            </Link>
             <InstallButton />
           </div>
 
