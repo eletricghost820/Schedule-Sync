@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronRight, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PERIOD_ORDER, isFree } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
@@ -93,6 +93,12 @@ function Index() {
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
             >
               Class overlap <ArrowRight className="size-4" />
+            </Link>
+            <Link
+              to="/add-schedule"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-bold uppercase tracking-wide text-foreground transition-transform hover:-translate-y-0.5"
+            >
+              Add yours <Plus className="size-4" />
             </Link>
             <InstallButton />
           </div>
