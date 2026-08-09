@@ -84,22 +84,16 @@ function Index() {
             Sync
           </p>
           <p className="mt-5 max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base lg:max-w-xl lg:text-lg">
-            Full daily schedules for all {students.length} of us — plus a free
-            period finder and shared class matcher, so nobody eats lunch alone.
+            Full daily schedules for all {students.length} of us — plus a shared
+            class matcher, so nobody eats lunch alone.
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link
-              to="/free-periods"
+              to="/overlap"
               className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
             >
-              Find free periods <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              to="/overlap"
-              className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-3 text-sm font-bold uppercase tracking-wide transition-colors hover:border-primary/50 hover:text-primary"
-            >
-              Class overlap <ArrowUpRight className="size-4" />
+              Class overlap <ArrowRight className="size-4" />
             </Link>
             <InstallButton />
           </div>
