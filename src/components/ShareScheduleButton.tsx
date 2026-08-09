@@ -128,7 +128,8 @@ export function ShareScheduleButton({
       });
       stage.appendChild(clone);
       stage.appendChild(buildFooter());
-      document.body.appendChild(stage);
+      holder.appendChild(stage);
+      document.body.appendChild(holder);
 
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
@@ -167,7 +168,7 @@ export function ShareScheduleButton({
       console.error(err);
       toast.error("Couldn't create the share image. Try again.");
     } finally {
-      stage.remove();
+      holder.remove();
       setBusy(false);
     }
   };
