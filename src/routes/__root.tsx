@@ -18,7 +18,6 @@ import { ThemeToggle } from "../components/ThemeToggle";
 
 const NAV = [
   { to: "/", label: "Friends" },
-  { to: "/free-periods", label: "Free Periods" },
   { to: "/overlap", label: "Class Overlap" },
   { to: "/add-schedule", label: "Add Yours" },
 ] as const;

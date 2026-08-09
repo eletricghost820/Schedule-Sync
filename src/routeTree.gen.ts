@@ -11,7 +11,6 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddScheduleRouteImport } from './routes/add-schedule'
-import { Route as FreePeriodsRouteImport } from './routes/free-periods'
 import { Route as OverlapRouteImport } from './routes/overlap'
 import { Route as StudentStudentIdRouteImport } from './routes/student.$studentId'
 import { Route as ApiPublicAdminRouteImport } from './routes/api/public/admin'
@@ -25,11 +24,6 @@ const IndexRoute = IndexRouteImport.update({
 const AddScheduleRoute = AddScheduleRouteImport.update({
   id: '/add-schedule',
   path: '/add-schedule',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FreePeriodsRoute = FreePeriodsRouteImport.update({
-  id: '/free-periods',
-  path: '/free-periods',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OverlapRoute = OverlapRouteImport.update({
@@ -57,7 +51,6 @@ const ApiPublicExtractScheduleRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/add-schedule': typeof AddScheduleRoute
-  '/free-periods': typeof FreePeriodsRoute
   '/overlap': typeof OverlapRoute
   '/student/$studentId': typeof StudentStudentIdRoute
   '/api/public/admin': typeof ApiPublicAdminRoute
@@ -66,7 +59,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/add-schedule': typeof AddScheduleRoute
-  '/free-periods': typeof FreePeriodsRoute
   '/overlap': typeof OverlapRoute
   '/student/$studentId': typeof StudentStudentIdRoute
   '/api/public/admin': typeof ApiPublicAdminRoute
@@ -76,7 +68,6 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/add-schedule': typeof AddScheduleRoute
-  '/free-periods': typeof FreePeriodsRoute
   '/overlap': typeof OverlapRoute
   '/student/$studentId': typeof StudentStudentIdRoute
   '/api/public/admin': typeof ApiPublicAdminRoute
@@ -87,7 +78,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/add-schedule'
-    | '/free-periods'
     | '/overlap'
     | '/student/$studentId'
     | '/api/public/admin'
@@ -96,7 +86,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/add-schedule'
-    | '/free-periods'
     | '/overlap'
     | '/student/$studentId'
     | '/api/public/admin'
@@ -105,7 +94,6 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/add-schedule'
-    | '/free-periods'
     | '/overlap'
     | '/student/$studentId'
     | '/api/public/admin'
@@ -115,7 +103,6 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AddScheduleRoute: typeof AddScheduleRoute
-  FreePeriodsRoute: typeof FreePeriodsRoute
   OverlapRoute: typeof OverlapRoute
   StudentStudentIdRoute: typeof StudentStudentIdRoute
   ApiPublicAdminRoute: typeof ApiPublicAdminRoute
@@ -136,13 +123,6 @@ declare module '@tanstack/react-router' {
       path: '/add-schedule'
       fullPath: '/add-schedule'
       preLoaderRoute: typeof AddScheduleRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/free-periods': {
-      id: '/free-periods'
-      path: '/free-periods'
-      fullPath: '/free-periods'
-      preLoaderRoute: typeof FreePeriodsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/overlap': {
@@ -179,7 +159,6 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AddScheduleRoute: AddScheduleRoute,
-  FreePeriodsRoute: FreePeriodsRoute,
   OverlapRoute: OverlapRoute,
   StudentStudentIdRoute: StudentStudentIdRoute,
   ApiPublicAdminRoute: ApiPublicAdminRoute,
