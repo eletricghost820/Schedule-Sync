@@ -14,6 +14,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import logoAsset from "../assets/logo.png.asset.json";
 import { PageTransition } from "../components/PageTransition";
 import { Toaster } from "../components/ui/sonner";
+import { ThemeToggle } from "../components/ThemeToggle";
 
 const NAV = [
   { to: "/", label: "Friends" },
@@ -42,6 +43,7 @@ function SiteChrome({ children }: { children: ReactNode }) {
           <span className="ml-auto text-[11px] uppercase tracking-widest text-muted-foreground">
             Class of 2030
           </span>
+          <ThemeToggle />
         </div>
         <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-2 lg:max-w-5xl lg:gap-2 lg:px-6 xl:max-w-6xl">
           {NAV.map((item) => (
@@ -171,9 +173,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('schedule-sync-theme');document.documentElement.classList.toggle('dark',t!=='light')}catch(e){}`,
+          }}
+        />
       </head>
       <body>
         {children}
