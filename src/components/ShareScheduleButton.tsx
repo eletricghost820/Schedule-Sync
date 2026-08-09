@@ -91,6 +91,7 @@ export function ShareScheduleButton({
     if (!source || busy) return;
     setBusy(true);
 
+    const holder = document.createElement("div");
     const stage = document.createElement("div");
     try {
       const { toBlob } = await import("html-to-image");
@@ -99,10 +100,13 @@ export function ShareScheduleButton({
       const wide = contentWidth > CARD_WIDTH - 96;
       const width = wide ? contentWidth + 96 : CARD_WIDTH;
 
-      stage.style.position = "fixed";
-      stage.style.top = "0";
-      stage.style.left = "-100000px";
-      stage.style.zIndex = "-1";
+      holder.style.position = "fixed";
+      holder.style.top = "0";
+      holder.style.left = "-100000px";
+      holder.style.zIndex = "-1";
+      holder.style.pointerEvents = "none";
+
+      stage.style.position = "static";
       stage.style.width = `${width}px`;
       stage.style.boxSizing = "border-box";
       stage.style.padding = "48px";
