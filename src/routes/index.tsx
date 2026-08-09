@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, ChevronRight, Trash2 } from "lucide-react";
+import { ArrowRight, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PERIOD_ORDER, isFree } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
