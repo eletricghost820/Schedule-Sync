@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useServerFn } from "@tanstack/react-start";
 import { Shield, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
 import { adminRequest } from "@/lib/admin-api";
@@ -8,7 +7,6 @@ import { Modal } from "@/components/Modal";
 
 export function AdminControl() {
   const { admin, enable, disable } = useAdminMode();
-  const check = useServerFn(verifyAdmin);
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
