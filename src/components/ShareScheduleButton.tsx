@@ -13,6 +13,31 @@ function cssVar(name: string, fallback: string) {
 }
 
 function buildFooter() {
+  return buildFooterEl();
+}
+
+let fontCssCache: string | null = null;
+async function getFontEmbedCss() {
+  if (fontCssCache !== null) return fontCssCache;
+  const hrefs = Array.from(
+    document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'),
+  )
+    .map((l) => l.href)
+    .filter((h) => h.startsWith("http") && !h.startsWith(window.location.origin));
+  const parts: string[] = [];
+  for (const href of hrefs) {
+    try {
+      const res = await fetch(href);
+      if (res.ok) parts.push(await res.text());
+    } catch {
+      /* ignore — falls back to system fonts */
+    }
+  }
+  fontCssCache = parts.join("\n");
+  return fontCssCache;
+}
+
+function buildFooterEl() {
   const footer = document.createElement("div");
   footer.style.display = "flex";
   footer.style.alignItems = "center";
