@@ -5,6 +5,7 @@ import { PERIOD_ORDER, isFree } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
 import { InstallButton } from "@/components/InstallButton";
 import { AdminControl } from "@/components/AdminControl";
+import { NextClassCountdown } from "@/components/NextClassCountdown";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { isCommunityStudent, useAllStudents, useRefreshCommunity } from "@/lib/community";
 import { adminRequest } from "@/lib/admin-api";
@@ -119,6 +120,8 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <NextClassCountdown />
 
       <section>
         <div className="flex items-center gap-2">
