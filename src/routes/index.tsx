@@ -108,10 +108,6 @@ function Index() {
               {students.length} friends tracked
             </span>
             <span className="flex items-center gap-2">
-              <i className="size-1.5 rounded-full bg-free" />
-              {totalFree} free periods
-            </span>
-            <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
               10 daily blocks
             </span>
