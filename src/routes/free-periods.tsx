@@ -126,20 +126,22 @@ function FreePeriods() {
         {rows.filter((r) => r.freeNames.length >= 2).length === 0 ? (
           <p className="text-sm text-muted-foreground">No shared free periods.</p>
         ) : (
-          rows
-            .filter((r) => r.freeNames.length >= 2)
-            .map((r) => (
-              <div
-                key={r.period}
-                className="rounded-lg border border-free/40 bg-free-soft/50 px-3 py-2 text-sm"
-              >
-                <span className="font-display font-bold">{PERIOD_LABEL[r.period]}</span>
-                <span className="text-muted-foreground"> · {BELL_TIMES[r.period]}</span>
-                <div className="text-free-foreground">
-                  {r.freeNames.length} free: {r.freeNames.join(", ")}
+          <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+            {rows
+              .filter((r) => r.freeNames.length >= 2)
+              .map((r) => (
+                <div
+                  key={r.period}
+                  className="rounded-lg border border-free/40 bg-free-soft/50 px-3 py-2 text-sm"
+                >
+                  <span className="font-display font-bold">{PERIOD_LABEL[r.period]}</span>
+                  <span className="text-muted-foreground"> · {BELL_TIMES[r.period]}</span>
+                  <div className="text-free-foreground">
+                    {r.freeNames.length} free: {r.freeNames.join(", ")}
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+          </div>
         )}
       </section>
 

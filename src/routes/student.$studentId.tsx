@@ -60,7 +60,7 @@ function StudentPage() {
         <ArrowLeft className="size-4" /> All friends
       </Link>
 
-      <div ref={shareRef} className="space-y-4">
+      <div ref={shareRef} className="space-y-4 lg:max-w-3xl">
       <header className="flex items-center gap-3">
         <span className="flex size-11 items-center justify-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
           {student.initials}
