@@ -87,21 +87,20 @@ function Index() {
             class matcher, so nobody eats lunch alone.
           </p>
 
-          <div className="mt-7 flex flex-wrap items-center gap-3">
+          <div className="mt-7 flex w-full max-w-xs flex-col items-stretch gap-3">
             <Link
               to="/overlap"
-              className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-bold uppercase tracking-wide text-primary-foreground shadow-lg shadow-primary/25 transition-transform hover:-translate-y-0.5"
             >
               Class overlap <ArrowRight className="size-4" />
             </Link>
-            <div className="basis-full" />
             <Link
               to="/add-schedule"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-bold uppercase tracking-wide text-foreground transition-transform hover:-translate-y-0.5"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-bold uppercase tracking-wide text-foreground transition-transform hover:-translate-y-0.5"
             >
               Add yours <Plus className="size-4" />
             </Link>
-            <InstallButton />
+            <InstallButton className="w-full justify-center px-6" />
           </div>
 
           <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 border-t border-border pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground lg:gap-x-10 lg:text-xs">
