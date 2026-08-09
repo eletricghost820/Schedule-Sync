@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           counselor: string | null
           created_at: string
+          deleted_at: string | null
           id: string
           initials: string
           name: string
@@ -26,6 +27,7 @@ export type Database = {
         Insert: {
           counselor?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: string
           initials: string
           name: string
@@ -34,6 +36,7 @@ export type Database = {
         Update: {
           counselor?: string | null
           created_at?: string
+          deleted_at?: string | null
           id?: string
           initials?: string
           name?: string
