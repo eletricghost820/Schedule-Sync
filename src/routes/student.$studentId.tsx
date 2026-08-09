@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -8,6 +9,7 @@ import {
   isFree,
 } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
+import { ShareScheduleButton } from "@/components/ShareScheduleButton";
 import { useAllStudents } from "@/lib/community";
 
 export const Route = createFileRoute("/student/$studentId")({
@@ -39,6 +41,7 @@ function StudentPage() {
   const { studentId } = Route.useParams();
   const { students, isLoading } = useAllStudents();
   const student = students.find((s) => s.id === studentId);
+  const shareRef = useRef<HTMLDivElement>(null);
 
   if (!student) {
     return (
@@ -57,11 +60,12 @@ function StudentPage() {
         <ArrowLeft className="size-4" /> All friends
       </Link>
 
+      <div ref={shareRef} className="space-y-4">
       <header className="flex items-center gap-3">
         <span className="flex size-11 items-center justify-center rounded-full bg-primary font-display text-sm font-bold text-primary-foreground">
           {student.initials}
         </span>
-        <div>
+        <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold leading-tight">{student.name}</h1>
           <p className="text-xs text-muted-foreground">
             Daily schedule · standard bell times
@@ -134,6 +138,13 @@ function StudentPage() {
       </div>
 
       <WednesdayNote />
+      </div>
+
+      <ShareScheduleButton
+        targetRef={shareRef}
+        fileName={`${student.name.replace(/\s+/g, "-").toLowerCase()}-schedule`}
+        shareTitle={`${student.name}'s schedule`}
+      />
 
       <div className="flex flex-wrap gap-2 pt-1">
         {students.filter((s) => s.id !== student.id).map((s) => (

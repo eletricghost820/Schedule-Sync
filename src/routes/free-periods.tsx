@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import {
   BELL_TIMES,
@@ -8,6 +9,7 @@ import {
 } from "@/data/schedule";
 import { useAllStudents } from "@/lib/community";
 import { WednesdayNote } from "@/components/WednesdayNote";
+import { ShareScheduleButton } from "@/components/ShareScheduleButton";
 
 const title = "Free Period Finder — Schedule Sync";
 const description =
@@ -27,6 +29,7 @@ export const Route = createFileRoute("/free-periods")({
 
 function FreePeriods() {
   const { students } = useAllStudents();
+  const shareRef = useRef<HTMLDivElement>(null);
   const rows = PERIOD_ORDER.map((p) => {
     const cells = students.map((s) => {
       const slot = s.slots[p];
@@ -43,12 +46,18 @@ function FreePeriods() {
   });
 
   return (
-    <div className="space-y-4">
+    <div ref={shareRef} className="space-y-4">
       <section>
         <h1 className="text-2xl font-bold">Free Period Finder</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Green = Lunch or Study Hall. Rows with 2+ free friends are highlighted.
         </p>
+        <ShareScheduleButton
+          targetRef={shareRef}
+          fileName="free-period-finder"
+          shareTitle="Free Period Finder"
+          className="mt-3"
+        />
       </section>
 
       <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
