@@ -96,11 +96,13 @@ export function ShareScheduleButton({
   fileName,
   shareTitle,
   className = "",
+  iconOnly = false,
 }: {
   targetRef: RefObject<HTMLElement | null>;
   fileName: string;
   shareTitle: string;
   className?: string;
+  iconOnly?: boolean;
 }) {
   const [busy, setBusy] = useState(false);
 
@@ -190,6 +192,26 @@ export function ShareScheduleButton({
       setBusy(false);
     }
   };
+
+  if (iconOnly) {
+    return (
+      <button
+        type="button"
+        onClick={handleShare}
+        disabled={busy}
+        data-share-hide
+        aria-label="Share schedule"
+        title="Share schedule"
+        className={`inline-flex size-9 shrink-0 items-center justify-center rounded-full text-foreground transition-colors hover:bg-secondary disabled:opacity-60 ${className}`}
+      >
+        {busy ? (
+          <Loader2 className="size-5 animate-spin" />
+        ) : (
+          <Share2 className="size-5" />
+        )}
+      </button>
+    );
+  }
 
   return (
     <button
