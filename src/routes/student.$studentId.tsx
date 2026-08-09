@@ -72,6 +72,12 @@ function StudentPage() {
             {student.counselor ? ` · Counselor: ${student.counselor}` : ""}
           </p>
         </div>
+        <ShareScheduleButton
+          targetRef={shareRef}
+          fileName={`${student.name.replace(/\s+/g, "-").toLowerCase()}-schedule`}
+          shareTitle={`${student.name}'s schedule`}
+          iconOnly
+        />
       </header>
 
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
@@ -139,12 +145,6 @@ function StudentPage() {
 
       <WednesdayNote />
       </div>
-
-      <ShareScheduleButton
-        targetRef={shareRef}
-        fileName={`${student.name.replace(/\s+/g, "-").toLowerCase()}-schedule`}
-        shareTitle={`${student.name}'s schedule`}
-      />
 
       <div className="flex flex-wrap gap-2 pt-1">
         {students.filter((s) => s.id !== student.id).map((s) => (
