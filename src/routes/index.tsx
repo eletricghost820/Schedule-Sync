@@ -50,11 +50,6 @@ function Index() {
     }
   }
 
-  const totalFree = students.reduce(
-    (n, s) =>
-      n + PERIOD_ORDER.filter((p) => p !== "HR" && isFree(s.slots[p])).length,
-    0,
-  );
   return (
     <div className="space-y-8">
       <section className="relative -mx-4 overflow-hidden border-b border-border px-4 py-12 sm:-mx-6 sm:px-6 lg:rounded-3xl lg:border lg:px-12 lg:py-20">
@@ -106,10 +101,6 @@ function Index() {
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
               {students.length} friends tracked
-            </span>
-            <span className="flex items-center gap-2">
-              <i className="size-1.5 rounded-full bg-free" />
-              {totalFree} free periods
             </span>
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
