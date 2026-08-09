@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BELL_TIMES,
@@ -12,6 +12,7 @@ import {
 } from "@/data/schedule";
 import { useAllStudents } from "@/lib/community";
 import { WednesdayNote } from "@/components/WednesdayNote";
+import { ShareScheduleButton } from "@/components/ShareScheduleButton";
 
 const title = "Class Overlap — Schedule Sync";
 const description =
@@ -41,6 +42,7 @@ function arrangements(slot: Slot) {
 function Overlap() {
   const { students, isLoading } = useAllStudents();
   const [meId, setMeId] = useState<string>("");
+  const shareRef = useRef<HTMLDivElement>(null);
 
   const me = students.find((s) => s.id === meId);
 
@@ -106,7 +108,15 @@ function Overlap() {
           .
         </p>
       ) : (
-        <section className="space-y-3">
+        <section ref={shareRef} className="space-y-3">
+          <div className="flex items-center justify-between gap-2" data-share-hide>
+            <span className="text-sm text-muted-foreground">{me.name}&rsquo;s overlaps</span>
+            <ShareScheduleButton
+              targetRef={shareRef}
+              fileName={`${me.name.replace(/\s+/g, "-").toLowerCase()}-class-overlap`}
+              shareTitle={`${me.name}'s class overlaps`}
+            />
+          </div>
           {rows.map(({ period, blocks }) => (
             <div key={period} className="rounded-xl border border-border bg-card p-3 shadow-sm">
               <div className="flex items-baseline justify-between gap-2">
