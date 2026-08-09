@@ -104,7 +104,7 @@ function Index() {
             </span>
             <span className="flex items-center gap-2">
               <i className="size-1.5 rounded-full bg-primary" />
-              10 daily blocks
+              9 daily periods
             </span>
           </div>
         </div>
