@@ -33,7 +33,25 @@ async function getFontEmbedCss() {
       /* ignore — falls back to system fonts */
     }
   }
-  fontCssCache = parts.join("\n");
+  let css = parts.join("\n");
+  // Inline every remote font file as a data URL — remote url() references
+  // inside the exported SVG never resolve and blank the render.
+  const urls = Array.from(new Set(css.match(/url\((https?:\/\/[^)]+)\)/g) ?? []));
+  for (const raw of urls) {
+    const href = raw.slice(4, -1).replace(/["']/g, "");
+    try {
+      const res = await fetch(href);
+      if (!res.ok) throw new Error("bad font");
+      const buf = await res.arrayBuffer();
+      let bin = "";
+      new Uint8Array(buf).forEach((b) => (bin += String.fromCharCode(b)));
+      const data = `data:${res.headers.get("content-type") || "font/woff2"};base64,${btoa(bin)}`;
+      css = css.split(raw).join(`url(${data})`);
+    } catch {
+      css = css.replace(new RegExp(`@font-face\\s*{[^}]*${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^}]*}`, "g"), "");
+    }
+  }
+  fontCssCache = css;
   return fontCssCache;
 }
 
