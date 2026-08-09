@@ -132,6 +132,7 @@ export function ShareScheduleButton({
         pixelRatio: 2,
         backgroundColor: cssVar("--background", "#101014"),
         cacheBust: true,
+        fontEmbedCSS: await getFontEmbedCss(),
       });
       if (!blob) throw new Error("Could not render image");
 
