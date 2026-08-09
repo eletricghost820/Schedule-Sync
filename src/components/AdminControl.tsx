@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { Shield, ShieldCheck, X } from "lucide-react";
 import { toast } from "sonner";
-import { verifyAdmin } from "@/lib/schedule.functions";
+import { adminRequest } from "@/lib/admin-api";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { Modal } from "@/components/Modal";
 
@@ -37,7 +37,7 @@ export function AdminControl() {
     setBusy(true);
     setError(false);
     try {
-      const res = await check({ data: { password: value } });
+      const res = await adminRequest({ password: value, action: "verify" });
       if (res.ok) {
         enable(value);
         setOpen(false);

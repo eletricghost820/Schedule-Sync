@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, ArrowUpRight, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PERIOD_ORDER, isFree } from "@/data/schedule";
@@ -8,7 +7,7 @@ import { InstallButton } from "@/components/InstallButton";
 import { AdminControl } from "@/components/AdminControl";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { isCommunityStudent, useAllStudents, useRefreshCommunity } from "@/lib/community";
-import { removeCommunitySchedule } from "@/lib/schedule.functions";
+import { adminRequest } from "@/lib/admin-api";
 
 const title = "Schedule Sync — Shared Class Schedules";
 const description =
@@ -29,13 +28,12 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { students } = useAllStudents();
   const { admin, password } = useAdminMode();
-  const remove = useServerFn(removeCommunitySchedule);
   const refresh = useRefreshCommunity();
 
   async function handleRemove(rowId: string, name: string) {
     if (!password) return;
     try {
-      const res = await remove({ data: { password, id: rowId } });
+      const res = await adminRequest({ password, action: "remove", id: rowId });
       if (!res.ok) {
         toast.error("Admin password no longer valid");
         return;

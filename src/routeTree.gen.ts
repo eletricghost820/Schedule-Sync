@@ -14,6 +14,7 @@ import { Route as AddScheduleRouteImport } from './routes/add-schedule'
 import { Route as FreePeriodsRouteImport } from './routes/free-periods'
 import { Route as OverlapRouteImport } from './routes/overlap'
 import { Route as StudentStudentIdRouteImport } from './routes/student.$studentId'
+import { Route as ApiPublicAdminRouteImport } from './routes/api/public/admin'
 import { Route as ApiPublicExtractScheduleRouteImport } from './routes/api/public/extract-schedule'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const StudentStudentIdRoute = StudentStudentIdRouteImport.update({
   path: '/student/$studentId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicAdminRoute = ApiPublicAdminRouteImport.update({
+  id: '/api/public/admin',
+  path: '/api/public/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicExtractScheduleRoute =
   ApiPublicExtractScheduleRouteImport.update({
     id: '/api/public/extract-schedule',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/free-periods': typeof FreePeriodsRoute
   '/overlap': typeof OverlapRoute
   '/student/$studentId': typeof StudentStudentIdRoute
+  '/api/public/admin': typeof ApiPublicAdminRoute
   '/api/public/extract-schedule': typeof ApiPublicExtractScheduleRoute
 }
 export interface FileRoutesByTo {
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/free-periods': typeof FreePeriodsRoute
   '/overlap': typeof OverlapRoute
   '/student/$studentId': typeof StudentStudentIdRoute
+  '/api/public/admin': typeof ApiPublicAdminRoute
   '/api/public/extract-schedule': typeof ApiPublicExtractScheduleRoute
 }
 export interface FileRoutesById {
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/free-periods': typeof FreePeriodsRoute
   '/overlap': typeof OverlapRoute
   '/student/$studentId': typeof StudentStudentIdRoute
+  '/api/public/admin': typeof ApiPublicAdminRoute
   '/api/public/extract-schedule': typeof ApiPublicExtractScheduleRoute
 }
 export interface FileRouteTypes {
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/free-periods'
     | '/overlap'
     | '/student/$studentId'
+    | '/api/public/admin'
     | '/api/public/extract-schedule'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/free-periods'
     | '/overlap'
     | '/student/$studentId'
+    | '/api/public/admin'
     | '/api/public/extract-schedule'
   id:
     | '__root__'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/free-periods'
     | '/overlap'
     | '/student/$studentId'
+    | '/api/public/admin'
     | '/api/public/extract-schedule'
   fileRoutesById: FileRoutesById
 }
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   FreePeriodsRoute: typeof FreePeriodsRoute
   OverlapRoute: typeof OverlapRoute
   StudentStudentIdRoute: typeof StudentStudentIdRoute
+  ApiPublicAdminRoute: typeof ApiPublicAdminRoute
   ApiPublicExtractScheduleRoute: typeof ApiPublicExtractScheduleRoute
 }
 
@@ -146,6 +159,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudentStudentIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/admin': {
+      id: '/api/public/admin'
+      path: '/api/public/admin'
+      fullPath: '/api/public/admin'
+      preLoaderRoute: typeof ApiPublicAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/extract-schedule': {
       id: '/api/public/extract-schedule'
       path: '/api/public/extract-schedule'
@@ -162,8 +182,19 @@ const rootRouteChildren: RootRouteChildren = {
   FreePeriodsRoute: FreePeriodsRoute,
   OverlapRoute: OverlapRoute,
   StudentStudentIdRoute: StudentStudentIdRoute,
+  ApiPublicAdminRoute: ApiPublicAdminRoute,
   ApiPublicExtractScheduleRoute: ApiPublicExtractScheduleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
