@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronRight, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -5,6 +6,7 @@ import { PERIOD_ORDER, isFree } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
 import { InstallButton } from "@/components/InstallButton";
 import { AdminControl } from "@/components/AdminControl";
+import { TrashSection } from "@/components/TrashSection";
 import { NextClassCountdown } from "@/components/NextClassCountdown";
 import { useAdminMode } from "@/hooks/useAdminMode";
 import { isCommunityStudent, useAllStudents, useRefreshCommunity } from "@/lib/community";
@@ -30,6 +32,7 @@ function Index() {
   const { students } = useAllStudents();
   const { admin, password } = useAdminMode();
   const refresh = useRefreshCommunity();
+  const [trashTick, setTrashTick] = useState(0);
 
   async function handleRemove(rowId: string, name: string) {
     if (!password) return;
@@ -40,7 +43,8 @@ function Index() {
         return;
       }
       await refresh();
-      toast.success(`Removed ${name}`);
+      setTrashTick((n) => n + 1);
+      toast.success(`Moved ${name} to trash`);
     } catch {
       toast.error("Could not remove that schedule");
     }
@@ -128,9 +132,13 @@ function Index() {
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           Tap a friend to see their full day, period by period.
-          {admin ? " Admin mode is on — you can remove added schedules." : ""}
+          {admin
+            ? " Admin mode is on — removed schedules go to trash for 7 days."
+            : ""}
         </p>
       </section>
+
+      {admin ? <TrashSection key={trashTick} onChange={() => void refresh()} /> : null}
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
         {students.map((s) => {
