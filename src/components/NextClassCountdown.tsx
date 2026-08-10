@@ -134,12 +134,12 @@ export function NextClassCountdown() {
         <p className="mt-4 text-sm text-muted-foreground">Checking the bell…</p>
       ) : countdown ? (
         <>
-          <div className="mt-4 flex items-end gap-4">
-            <p className="font-display text-5xl font-extrabold leading-none tabular-nums text-primary sm:text-6xl">
-              {countdown.value}
-            </p>
-            <p className="pb-1 text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <div className="mt-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted-foreground">
               {countdown.label}
+            </p>
+            <p className="mt-1 font-display text-5xl font-extrabold leading-none tabular-nums text-primary sm:text-6xl">
+              {countdown.value}
             </p>
           </div>
 
