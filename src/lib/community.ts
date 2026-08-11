@@ -64,6 +64,7 @@ export function rowToStudent(row: Row): CommunityStudent {
 }
 
 export const communityQueryKey = ["community-schedules"] as const;
+export const hiddenQueryKey = ["hidden-students"] as const;
 
 export async function fetchCommunityStudents(): Promise<CommunityStudent[]> {
   const { data, error } = await supabase
@@ -74,6 +75,12 @@ export async function fetchCommunityStudents(): Promise<CommunityStudent[]> {
   return (data ?? []).map((r) => rowToStudent(r as Row));
 }
 
+export async function fetchHiddenStudentIds(): Promise<string[]> {
+  const { data, error } = await supabase.from("hidden_students").select("student_id");
+  if (error) throw error;
+  return (data ?? []).map((r) => r.student_id);
+}
+
 /** Built-in crew plus every community-submitted schedule. */
 export function useAllStudents() {
   const query = useQuery({
@@ -81,17 +88,28 @@ export function useAllStudents() {
     queryFn: fetchCommunityStudents,
     staleTime: 30_000,
   });
+  const hiddenQuery = useQuery({
+    queryKey: hiddenQueryKey,
+    queryFn: fetchHiddenStudentIds,
+    staleTime: 30_000,
+  });
   const community = query.data ?? [];
+  const hidden = new Set(hiddenQuery.data ?? []);
   return {
-    students: [...STUDENTS, ...community] as Student[],
+    students: [...STUDENTS.filter((s) => !hidden.has(s.id)), ...community] as Student[],
     community,
-    isLoading: query.isLoading,
+    isLoading: query.isLoading || hiddenQuery.isLoading,
   };
 }
 
 export function useRefreshCommunity() {
   const qc = useQueryClient();
-  return () => qc.invalidateQueries({ queryKey: communityQueryKey });
+  return async () => {
+    await Promise.all([
+      qc.invalidateQueries({ queryKey: communityQueryKey }),
+      qc.invalidateQueries({ queryKey: hiddenQueryKey }),
+    ]);
+  };
 }
 
 export function isCommunityStudent(s: Student): s is CommunityStudent {

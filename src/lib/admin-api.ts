@@ -3,12 +3,15 @@ export type TrashItem = {
   name: string;
   initials: string;
   deleted_at: string;
+  kind?: "community" | "builtin";
 };
 
 export async function adminRequest(body: {
   password: string;
-  action: "verify" | "remove" | "trash" | "restore" | "purge";
+  action: "verify" | "remove" | "trash" | "restore" | "purge" | "hide" | "unhide";
   id?: string;
+  name?: string;
+  initials?: string;
 }): Promise<{ ok: boolean; error?: string; items?: TrashItem[] }> {
   const res = await fetch("/api/public/admin", {
     method: "POST",

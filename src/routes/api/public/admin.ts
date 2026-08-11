@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 const Body = z.object({
   password: z.string().min(1).max(100),
-  action: z.enum(["verify", "remove", "trash", "restore", "purge"]),
-  id: z.string().uuid().optional(),
+  action: z.enum(["verify", "remove", "trash", "restore", "purge", "hide", "unhide"]),
+  id: z.string().min(1).max(100).optional(),
+  name: z.string().min(1).max(80).optional(),
+  initials: z.string().min(1).max(4).optional(),
 });
 
 const json = (body: unknown, status = 200) =>
@@ -57,10 +61,52 @@ export const Route = createFileRoute("/api/public/admin")({
               .not("deleted_at", "is", null)
               .order("deleted_at", { ascending: false });
             if (error) return json({ ok: false, error: error.message }, 502);
-            return json({ ok: true, items: data ?? [] });
+
+            const hidden = await supabaseAdmin
+              .from("hidden_students")
+              .select("student_id,name,initials,hidden_at")
+              .order("hidden_at", { ascending: false });
+            if (hidden.error) return json({ ok: false, error: hidden.error.message }, 502);
+
+            return json({
+              ok: true,
+              items: [
+                ...(data ?? []).map((r) => ({ ...r, kind: "community" as const })),
+                ...(hidden.data ?? []).map((r) => ({
+                  id: r.student_id,
+                  name: r.name,
+                  initials: r.initials,
+                  deleted_at: r.hidden_at,
+                  kind: "builtin" as const,
+                })),
+              ],
+            });
           }
 
           if (!parsed.data.id) return json({ ok: false, error: "Missing id" }, 400);
+
+          // Built-in crew members live in code, so hiding them is tracked separately.
+          if (parsed.data.action === "hide") {
+            const { error } = await supabaseAdmin.from("hidden_students").upsert({
+              student_id: parsed.data.id,
+              name: parsed.data.name ?? parsed.data.id,
+              initials: parsed.data.initials ?? "??",
+              hidden_at: new Date().toISOString(),
+            });
+            if (error) return json({ ok: false, error: error.message }, 502);
+            return json({ ok: true });
+          }
+
+          if (parsed.data.action === "unhide") {
+            const { error } = await supabaseAdmin
+              .from("hidden_students")
+              .delete()
+              .eq("student_id", parsed.data.id);
+            if (error) return json({ ok: false, error: error.message }, 502);
+            return json({ ok: true });
+          }
+
+          if (!UUID.test(parsed.data.id)) return json({ ok: false, error: "Bad id" }, 400);
 
           if (parsed.data.action === "purge") {
             const { error } = await supabaseAdmin
