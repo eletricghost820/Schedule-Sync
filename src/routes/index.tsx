@@ -34,17 +34,24 @@ function Index() {
   const refresh = useRefreshCommunity();
   const [trashTick, setTrashTick] = useState(0);
 
-  async function handleRemove(rowId: string, name: string) {
+  async function handleRemove(s: (typeof students)[number]) {
     if (!password) return;
+    const community = isCommunityStudent(s);
     try {
-      const res = await adminRequest({ password, action: "remove", id: rowId });
+      const res = await adminRequest({
+        password,
+        action: community ? "remove" : "hide",
+        id: community ? s.rowId : s.id,
+        name: s.name,
+        initials: s.initials,
+      });
       if (!res.ok) {
         toast.error("Admin password no longer valid");
         return;
       }
       await refresh();
       setTrashTick((n) => n + 1);
-      toast.success(`Moved ${name} to trash`);
+      toast.success(`Moved ${s.name} to trash`);
     } catch {
       toast.error("Could not remove that schedule");
     }
@@ -142,7 +149,6 @@ function Index() {
           const freeCount = PERIOD_ORDER.filter(
             (p) => p !== "HR" && isFree(s.slots[p]),
           ).length;
-          const community = isCommunityStudent(s);
           return (
             <div key={s.id} className="relative">
               <Link
@@ -161,10 +167,10 @@ function Index() {
                   <ChevronRight className="ml-auto size-4 text-primary transition-transform group-hover:translate-x-0.5" />
                 </span>
               </Link>
-              {admin && community ? (
+              {admin ? (
                 <button
                   type="button"
-                  onClick={() => void handleRemove(s.rowId, s.name)}
+                  onClick={() => void handleRemove(s)}
                   className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full border border-destructive/50 bg-destructive/15 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-destructive"
                 >
                   <Trash2 className="size-3" /> Remove
