@@ -150,7 +150,10 @@ function Overlap() {
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {b.teacher} · {b.room}
+                      <span className="font-semibold text-foreground">Room {b.room}</span>
+                      {" · "}
+                      {b.teacher}
+                      <span className="ml-1 text-[10px] uppercase tracking-wide">(yours)</span>
                     </p>
 
                     {b.matches.length === 0 ? (
@@ -160,24 +163,38 @@ function Overlap() {
                           : "No overlap — nobody else has this class."}
                       </p>
                     ) : (
-                      <ul className="mt-2 space-y-1">
-                        {b.matches.map((m) => (
-                          <li key={m.student.id}>
-                            <Link
-                              to="/student/$studentId"
-                              params={{ studentId: m.student.id }}
-                              className="flex items-center gap-2 text-sm hover:text-primary"
-                            >
-                              <span className="flex size-6 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground">
-                                {m.student.initials}
-                              </span>
-                              <span className="font-medium">{m.student.name}</span>
-                              <span className="ml-auto text-xs text-muted-foreground">
-                                {m.room}
-                              </span>
-                            </Link>
-                          </li>
-                        ))}
+                      <ul className="mt-2 space-y-1.5">
+                        {b.matches.map((m) => {
+                          const same = m.room === b.room && m.teacher === b.teacher;
+                          return (
+                            <li key={m.student.id}>
+                              <Link
+                                to="/student/$studentId"
+                                params={{ studentId: m.student.id }}
+                                className="flex items-start gap-2 rounded-lg border border-border/60 bg-background/40 p-2 text-sm hover:border-primary/50 hover:text-primary"
+                              >
+                                <span className="mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full bg-secondary text-[10px] font-bold text-secondary-foreground">
+                                  {m.student.initials}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="block font-medium">{m.student.name}</span>
+                                  <span className="block text-xs text-muted-foreground">
+                                    Room {m.room} · {m.teacher}
+                                  </span>
+                                </span>
+                                <span
+                                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                                    same
+                                      ? "bg-primary/15 text-primary"
+                                      : "bg-destructive/15 text-destructive"
+                                  }`}
+                                >
+                                  {same ? "Same room" : "Different room"}
+                                </span>
+                              </Link>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </div>
