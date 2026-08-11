@@ -36,8 +36,13 @@ export function TrashSection({ onChange }: { onChange?: () => void }) {
 
   async function act(action: "restore" | "purge", item: TrashItem) {
     if (!password) return;
+    const builtin = item.kind === "builtin";
     try {
-      const res = await adminRequest({ password, action, id: item.id });
+      const res = await adminRequest({
+        password,
+        action: builtin ? "unhide" : action,
+        id: item.id,
+      });
       if (!res.ok) {
         toast.error("Admin password no longer valid");
         return;
@@ -77,7 +82,7 @@ export function TrashSection({ onChange }: { onChange?: () => void }) {
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-semibold">{item.name}</span>
                 <span className="block text-[11px] text-muted-foreground">
-                  {daysLeft(item.deleted_at)}
+                  {item.kind === "builtin" ? "Hidden from site" : daysLeft(item.deleted_at)}
                 </span>
               </span>
               <button
@@ -88,14 +93,16 @@ export function TrashSection({ onChange }: { onChange?: () => void }) {
               >
                 <RotateCcw className="size-3.5" />
               </button>
-              <button
-                type="button"
-                onClick={() => void act("purge", item)}
-                title="Delete forever"
-                className="rounded-full border border-destructive/50 p-1.5 text-destructive"
-              >
-                <Trash2 className="size-3.5" />
-              </button>
+              {item.kind === "builtin" ? null : (
+                <button
+                  type="button"
+                  onClick={() => void act("purge", item)}
+                  title="Delete forever"
+                  className="rounded-full border border-destructive/50 p-1.5 text-destructive"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              )}
             </li>
           ))}
         </ul>

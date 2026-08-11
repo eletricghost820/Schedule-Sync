@@ -36,15 +36,12 @@ function Index() {
 
   async function handleRemove(s: (typeof students)[number]) {
     if (!password) return;
-    const community = isCommunityStudent(s);
     try {
-      const res = await adminRequest({
-        password,
-        action: community ? "remove" : "hide",
-        id: community ? s.rowId : s.id,
-        name: s.name,
-        initials: s.initials,
-      });
+      const res = await adminRequest(
+        isCommunityStudent(s)
+          ? { password, action: "remove", id: s.rowId }
+          : { password, action: "hide", id: s.id, name: s.name, initials: s.initials },
+      );
       if (!res.ok) {
         toast.error("Admin password no longer valid");
         return;
