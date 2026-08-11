@@ -44,6 +44,27 @@ export type Database = {
         }
         Relationships: []
       }
+      hidden_students: {
+        Row: {
+          hidden_at: string
+          initials: string
+          name: string
+          student_id: string
+        }
+        Insert: {
+          hidden_at?: string
+          initials: string
+          name: string
+          student_id: string
+        }
+        Update: {
+          hidden_at?: string
+          initials?: string
+          name?: string
+          student_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
