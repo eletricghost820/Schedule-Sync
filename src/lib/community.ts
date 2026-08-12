@@ -17,6 +17,15 @@ export function initialsFor(name: string) {
   return (letters.join("") || "??").slice(0, 4);
 }
 
+/** Everyone eats in the same place — normalize submitted lunch rooms. */
+const LUNCH_ROOM = "Cafe";
+const LUNCH_TEACHER = "Staff";
+
+function normalizeLunch<T extends { className: string; teacher: string; room: string }>(s: T): T {
+  if (!s.className.toLowerCase().includes("lunch")) return s;
+  return { ...s, teacher: LUNCH_TEACHER, room: LUNCH_ROOM };
+}
+
 function sanitizeSlots(raw: unknown): Partial<Record<PeriodId, Slot>> {
   const out: Partial<Record<PeriodId, Slot>> = {};
   if (!raw || typeof raw !== "object") return out;
@@ -24,20 +33,21 @@ function sanitizeSlots(raw: unknown): Partial<Record<PeriodId, Slot>> {
   for (const p of PERIOD_ORDER) {
     const v = obj[p] as Partial<Slot> | undefined;
     if (!v || typeof v !== "object" || !v.className) continue;
-    const slot: Slot = {
+    let slot: Slot = {
       className: String(v.className),
       teacher: String(v.teacher ?? "—"),
       room: String(v.room ?? "—"),
     };
     if (v.days) slot.days = String(v.days);
     if (v.alt && typeof v.alt === "object" && v.alt.className) {
-      slot.alt = {
+      slot.alt = normalizeLunch({
         className: String(v.alt.className),
         teacher: String(v.alt.teacher ?? "—"),
         room: String(v.alt.room ?? "—"),
         days: String(v.alt.days ?? ""),
-      };
+      });
     }
+    slot = normalizeLunch(slot);
     out[p] = slot;
   }
   return out;
