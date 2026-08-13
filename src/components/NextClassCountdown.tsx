@@ -108,7 +108,7 @@ export function NextClassCountdown() {
     <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="flex flex-wrap items-center gap-3">
         <span className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
-          <Clock className="size-3.5" /> {headline(status)}
+          <Clock className="size-3.5" /> {hydrated ? headline(status) : "Bell schedule"}
         </span>
         {hydrated && isWednesday ? (
           <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
