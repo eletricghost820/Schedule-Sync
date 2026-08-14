@@ -1,7 +1,7 @@
+import { useTodayBellTimes } from "@/lib/useTodayBells";
 import { useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  BELL_TIMES,
   PERIOD_LABEL,
   PERIOD_ORDER,
   classKey,
@@ -40,6 +40,7 @@ function arrangements(slot: Slot) {
 }
 
 function Overlap() {
+  const { times } = useTodayBellTimes();
   const { students, isLoading } = useAllStudents();
   const [meId, setMeId] = useState<string>("");
   const shareRef = useRef<HTMLDivElement>(null);

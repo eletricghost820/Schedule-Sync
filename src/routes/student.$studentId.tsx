@@ -1,8 +1,8 @@
+import { useTodayBellTimes } from "@/lib/useTodayBells";
 import { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 import {
-  BELL_TIMES,
   PERIOD_LABEL,
   PERIOD_ORDER,
   getStudent,
@@ -38,6 +38,7 @@ export const Route = createFileRoute("/student/$studentId")({
 });
 
 function StudentPage() {
+  const { times } = useTodayBellTimes();
   const { studentId } = Route.useParams();
   const { students, isLoading } = useAllStudents();
   const student = students.find((s) => s.id === studentId);
