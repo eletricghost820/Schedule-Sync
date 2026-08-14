@@ -7,6 +7,7 @@ import {
   isFreeName,
   bellTimesForDate,
   isSpecialDay,
+  slotForDay,
 } from "@/data/schedule";
 import {
   bellStatusAt,
@@ -157,7 +158,7 @@ export function NextClassCountdown() {
                 </p>
                 <div className="mt-1">
                   {me ? (
-                    <SlotLine slot={me.slots[currentPeriod]} />
+                    <SlotLine slot={slotForDay(me.slots[currentPeriod], day)} />
                   ) : (
                     <p className="font-display text-lg font-bold">In session</p>
                   )}
@@ -172,7 +173,7 @@ export function NextClassCountdown() {
                 </p>
                 <div className="mt-1">
                   {me ? (
-                    <SlotLine slot={me.slots[nextPeriod]} />
+                    <SlotLine slot={slotForDay(me.slots[nextPeriod], day)} />
                   ) : (
                     <p className="font-display text-lg font-bold">
                       {PERIOD_LABEL[nextPeriod]}
