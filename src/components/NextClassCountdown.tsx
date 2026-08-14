@@ -8,7 +8,7 @@ import {
 } from "@/data/schedule";
 import {
   bellStatusAt,
-  bellTimesForDay,
+  bellTimesForDate,
   formatCountdown,
   type BellStatus,
 } from "@/lib/bell";
@@ -80,7 +80,7 @@ export function NextClassCountdown() {
   const status = useMemo(() => bellStatusAt(now), [now]);
   const day = now.getDay();
   const isWednesday = day === 3;
-  const times = bellTimesForDay(day);
+  const times = bellTimesForDate(now);
 
   function pick(id: string) {
     setMeId(id);

@@ -96,7 +96,7 @@ function StudentPage() {
                 <tr key={p} className="border-t border-border align-top">
                   <td className="whitespace-nowrap px-3 py-3">
                     <div className="font-display font-bold">{PERIOD_LABEL[p]}</div>
-                    <div className="text-[11px] text-muted-foreground">{BELL_TIMES[p]}</div>
+                    <div className="text-[11px] text-muted-foreground">{times[p]}</div>
                   </td>
                   <td className="px-3 py-3">
                     {slot ? (
