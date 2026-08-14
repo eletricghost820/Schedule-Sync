@@ -33,3 +33,26 @@ export function alreadyLoggedThisSession(): boolean {
 export function markLoggedThisSession() {
   sessionStorage.setItem(SESSION_KEY, "1");
 }
+
+const LAST_NAME_KEY = "schedule-sync-last-logged-name";
+
+/**
+ * Call this anywhere the user tells us who they are (name pickers, the
+ * "Who are you?" prompt, submitting a schedule). Remembers the identity and
+ * logs a named visit whenever the name changes, so the log isn't all
+ * "Anonymous".
+ */
+export function identify(name: string | null, id?: string | null) {
+  if (typeof window === "undefined") return;
+  const clean = name?.trim();
+  if (!clean) return;
+  try {
+    if (id) localStorage.setItem(ME_KEY, id);
+    markLoggedThisSession();
+    if (localStorage.getItem(LAST_NAME_KEY) === clean) return;
+    localStorage.setItem(LAST_NAME_KEY, clean);
+  } catch {
+    // ignore storage failures, still log
+  }
+  void logVisit(clean);
+}
