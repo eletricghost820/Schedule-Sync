@@ -80,6 +80,7 @@ export function NextClassCountdown() {
   const status = useMemo(() => bellStatusAt(now), [now]);
   const day = now.getDay();
   const isWednesday = day === 3;
+  const isFriday = day === 5;
   const times = bellTimesForDay(day);
 
   function pick(id: string) {
@@ -113,6 +114,11 @@ export function NextClassCountdown() {
         {hydrated && isWednesday ? (
           <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
             Wednesday · shortened
+          </span>
+        ) : null}
+        {hydrated && isFriday ? (
+          <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+            Friday · extended homeroom
           </span>
         ) : null}
         <select
@@ -193,7 +199,9 @@ export function NextClassCountdown() {
       <p className="mt-3 text-[11px] text-muted-foreground">
         {isWednesday
           ? "Using the shortened Wednesday bells — first period at 9:40 AM, no homeroom."
-          : "Using the standard Mon/Tue/Thu/Fri bells. Wednesdays run shortened."}
+          : isFriday
+            ? "Using the Friday bells — extended homeroom from 10:19 to 11:04 AM."
+            : "Using the standard Mon/Tue/Thu bells. Wednesdays run shortened, Fridays have an extended homeroom."}
       </p>
     </section>
   );
