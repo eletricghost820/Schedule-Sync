@@ -5,10 +5,10 @@ import {
   type PeriodId,
   type Slot,
   isFreeName,
+  bellTimesForDate,
 } from "@/data/schedule";
 import {
   bellStatusAt,
-  bellTimesForDay,
   formatCountdown,
   type BellStatus,
 } from "@/lib/bell";
