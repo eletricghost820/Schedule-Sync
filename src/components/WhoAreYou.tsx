@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { Modal } from "@/components/Modal";
 import { useAllStudents } from "@/lib/community";
 import {
@@ -85,6 +86,13 @@ export function WhoAreYou() {
             That's me
           </button>
         </div>
+        <Link
+          to="/add-schedule"
+          onClick={() => finish(false)}
+          className="mt-3 block text-center text-xs font-medium text-primary underline underline-offset-4"
+        >
+          Don't see your name? Add it here
+        </Link>
       </div>
     </Modal>
   );
