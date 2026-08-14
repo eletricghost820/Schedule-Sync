@@ -115,6 +115,11 @@ export function NextClassCountdown() {
             Wednesday · shortened
           </span>
         ) : null}
+        {hydrated && isSpecialDay(now) ? (
+          <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+            Today only · extended homeroom
+          </span>
+        ) : null}
         <select
           value={meId}
           onChange={(e) => pick(e.target.value)}
