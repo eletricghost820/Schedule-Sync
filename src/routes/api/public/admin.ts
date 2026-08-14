@@ -5,7 +5,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const Body = z.object({
   password: z.string().min(1).max(100),
-  action: z.enum(["verify", "remove", "trash", "restore", "purge", "hide", "unhide"]),
+  action: z.enum(["verify", "remove", "trash", "restore", "purge", "hide", "unhide", "visits"]),
   id: z.string().min(1).max(100).optional(),
   name: z.string().min(1).max(80).optional(),
   initials: z.string().min(1).max(4).optional(),
@@ -45,6 +45,16 @@ export const Route = createFileRoute("/api/public/admin")({
           if (parsed.data.action === "verify") return json({ ok: true });
 
           const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+          if (parsed.data.action === "visits") {
+            const { data, error } = await supabaseAdmin
+              .from("visitor_logs")
+              .select("id,name,visitor_id,path,user_agent,created_at")
+              .order("created_at", { ascending: false })
+              .limit(500);
+            if (error) return json({ ok: false, error: error.message }, 502);
+            return json({ ok: true, visits: data ?? [] });
+          }
 
           // Anything trashed more than a week ago is gone for good.
           const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
