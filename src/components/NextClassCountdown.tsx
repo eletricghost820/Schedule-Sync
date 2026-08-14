@@ -8,7 +8,7 @@ import {
 } from "@/data/schedule";
 import {
   bellStatusAt,
-  bellTimesForDate,
+  bellTimesForDay,
   formatCountdown,
   type BellStatus,
 } from "@/lib/bell";
