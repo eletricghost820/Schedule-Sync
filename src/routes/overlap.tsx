@@ -6,6 +6,7 @@ import {
   PERIOD_ORDER,
   classKey,
   isFreeName,
+  slotForDay,
   type PeriodId,
   type Slot,
   type Student,
@@ -13,6 +14,8 @@ import {
 import { useAllStudents } from "@/lib/community";
 import { WednesdayNote } from "@/components/WednesdayNote";
 import { ShareScheduleButton } from "@/components/ShareScheduleButton";
+import { DayPicker } from "@/components/DayPicker";
+import { useSelectedDay } from "@/lib/useDay";
 
 const title = "Class Overlap — Schedule Sync";
 const description =
@@ -44,19 +47,20 @@ function Overlap() {
   const { students, isLoading } = useAllStudents();
   const [meId, setMeId] = useState<string>("");
   const shareRef = useRef<HTMLDivElement>(null);
+  const { day, setDay, today } = useSelectedDay();
 
   const me = students.find((s) => s.id === meId);
 
   const rows = useMemo(() => {
     if (!me) return [];
     return PERIOD_ORDER.map((period) => {
-      const slot = me.slots[period];
+      const slot = slotForDay(me.slots[period], day);
       const mine = slot ? arrangements(slot) : [];
       const blocks = mine.map((a) => {
         const matches: Match[] = [];
         for (const other of students) {
           if (other.id === me.id) continue;
-          const os = other.slots[period];
+          const os = slotForDay(other.slots[period], day);
           if (!os) continue;
           for (const b of arrangements(os)) {
             if (classKey(b.className) === classKey(a.className)) {
@@ -69,7 +73,7 @@ function Overlap() {
       });
       return { period, blocks };
     });
-  }, [me, students]);
+  }, [me, students, day]);
 
   return (
     <div className="space-y-4">
@@ -99,6 +103,8 @@ function Overlap() {
           ))}
         </select>
       </label>
+
+      <DayPicker day={day} onChange={setDay} today={today} />
 
       {!me ? (
         <p className="rounded-xl border border-dashed border-border bg-card/50 p-6 text-center text-sm text-muted-foreground">
