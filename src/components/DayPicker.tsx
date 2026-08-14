@@ -7,7 +7,7 @@ export function DayPicker({
 }: {
   day: number;
   onChange: (day: number) => void;
-  today?: number;
+  today?: number | undefined;
 }) {
   return (
     <div className="flex items-center gap-2" data-share-hide>
