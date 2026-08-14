@@ -372,5 +372,48 @@ export function classKey(name: string) {
   return name.trim().toLowerCase();
 }
 
+/** Weekday helpers for day-specific (A/B style) arrangements. */
+export const WEEKDAYS = [
+  { day: 1, short: "M", label: "Monday" },
+  { day: 2, short: "T", label: "Tuesday" },
+  { day: 3, short: "W", label: "Wednesday" },
+  { day: 4, short: "Th", label: "Thursday" },
+  { day: 5, short: "F", label: "Friday" },
+] as const;
+
+const DAY_TOKENS: Record<number, string[]> = {
+  1: ["mon", "m/", "monday"],
+  2: ["tue", "tues", "tuesday"],
+  3: ["wed", "wednesday"],
+  4: ["thu", "thur", "thurs", "thursday"],
+  5: ["fri", "friday"],
+};
+
+/** Does a free-form days string ("Mon/Wed/Fri", "Tue/Thu") include this weekday? */
+export function matchesDay(days: string | undefined, day: number): boolean {
+  if (!days) return true;
+  const d = days.toLowerCase();
+  if (d.includes("varies") || d.includes("daily") || d.includes("every")) return true;
+  const thursday = /thu/.test(d);
+  if (day === 2) return /tue/.test(d);
+  if (day === 4) return thursday;
+  return (DAY_TOKENS[day] ?? []).some((t) => d.includes(t));
+}
+
+/** Resolve a slot to the single arrangement that actually happens on `day`. */
+export function slotForDay(slot: Slot | undefined, day: number): Slot | undefined {
+  if (!slot) return undefined;
+  if (!slot.alt) return slot;
+  const base: Slot = {
+    className: slot.className,
+    teacher: slot.teacher,
+    room: slot.room,
+    ...(slot.days ? { days: slot.days } : {}),
+  };
+  if (matchesDay(slot.days, day)) return base;
+  if (matchesDay(slot.alt.days, day)) return { ...slot.alt };
+  return base;
+}
+
 export const WEDNESDAY_NOTE =
   "Wednesday runs a shortened, shifted bell schedule — first period starts at 9:40 AM, there is no homeroom, and every block is compressed. Times shown here are the standard Mon/Tue/Thu/Fri bells unless noted.";

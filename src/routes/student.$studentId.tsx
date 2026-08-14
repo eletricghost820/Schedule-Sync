@@ -7,10 +7,13 @@ import {
   PERIOD_ORDER,
   getStudent,
   isFree,
+  slotForDay,
 } from "@/data/schedule";
 import { WednesdayNote } from "@/components/WednesdayNote";
 import { ShareScheduleButton } from "@/components/ShareScheduleButton";
 import { useAllStudents } from "@/lib/community";
+import { DayPicker } from "@/components/DayPicker";
+import { useSelectedDay } from "@/lib/useDay";
 
 export const Route = createFileRoute("/student/$studentId")({
   loader: ({ params }) => {
@@ -43,6 +46,7 @@ function StudentPage() {
   const { students, isLoading } = useAllStudents();
   const student = students.find((s) => s.id === studentId);
   const shareRef = useRef<HTMLDivElement>(null);
+  const { day, setDay, today } = useSelectedDay();
 
   if (!student) {
     return (
@@ -81,6 +85,8 @@ function StudentPage() {
         />
       </header>
 
+      <DayPicker day={day} onChange={setDay} today={today} />
+
       <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
         <table className="w-full text-left text-sm">
           <thead className="bg-secondary text-[11px] uppercase tracking-wider text-muted-foreground">
@@ -91,7 +97,7 @@ function StudentPage() {
           </thead>
           <tbody>
             {PERIOD_ORDER.map((p) => {
-              const slot = student.slots[p];
+              const slot = slotForDay(student.slots[p], day);
               const freePeriod = p !== "HR" && isFree(slot);
               return (
                 <tr key={p} className="border-t border-border align-top">
@@ -119,19 +125,6 @@ function StudentPage() {
                         <div className="text-xs text-muted-foreground">
                           {slot.teacher} · {slot.room}
                         </div>
-                        {slot.alt ? (
-                          <div className="mt-1.5 border-l-2 border-partial-foreground/40 pl-2">
-                            <div className="text-sm font-medium">
-                              {slot.alt.className}
-                              <span className="ml-1 text-xs font-normal text-muted-foreground">
-                                ({slot.alt.days})
-                              </span>
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              {slot.alt.teacher} · {slot.alt.room}
-                            </div>
-                          </div>
-                        ) : null}
                       </>
                     ) : (
                       <span className="text-muted-foreground">—</span>
