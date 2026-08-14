@@ -16,6 +16,7 @@ import {
 } from "@/lib/bell";
 import { useAllStudents } from "@/lib/community";
 import { useHydrated } from "@/hooks/useHydrated";
+import { identify } from "@/lib/visits";
 
 const ME_KEY = "schedule-sync-me";
 
