@@ -16,6 +16,7 @@ import { WednesdayNote } from "@/components/WednesdayNote";
 import { ShareScheduleButton } from "@/components/ShareScheduleButton";
 import { DayPicker } from "@/components/DayPicker";
 import { useSelectedDay } from "@/lib/useDay";
+import { identify } from "@/lib/visits";
 
 const title = "Class Overlap — Schedule Sync";
 const description =
@@ -90,7 +91,12 @@ function Overlap() {
         </span>
         <select
           value={meId}
-          onChange={(e) => setMeId(e.target.value)}
+          onChange={(e) => {
+            const id = e.target.value;
+            setMeId(id);
+            const picked = students.find((s) => s.id === id);
+            if (picked) identify(picked.name, picked.id);
+          }}
           className="w-full rounded-xl border border-border bg-card px-3 py-3 text-base font-medium text-foreground outline-none focus:border-primary"
         >
           <option value="">

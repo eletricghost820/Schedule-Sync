@@ -7,6 +7,7 @@ import {
   logVisit,
   alreadyLoggedThisSession,
   markLoggedThisSession,
+  identify,
 } from "@/lib/visits";
 
 const ASKED_KEY = "schedule-sync-asked-name";
@@ -43,9 +44,8 @@ export function WhoAreYou() {
   function finish(save: boolean) {
     localStorage.setItem(ASKED_KEY, "1");
     if (save && choice) {
-      localStorage.setItem(ME_KEY, choice);
       const picked = students.find((s) => s.id === choice);
-      void logVisit(picked ? picked.name : choice);
+      identify(picked ? picked.name : choice, choice);
     }
     setOpen(false);
   }

@@ -86,8 +86,11 @@ export function NextClassCountdown() {
 
   function pick(id: string) {
     setMeId(id);
-    if (id) window.localStorage.setItem(ME_KEY, id);
-    else window.localStorage.removeItem(ME_KEY);
+    if (id) {
+      window.localStorage.setItem(ME_KEY, id);
+      const picked = students.find((s) => s.id === id);
+      if (picked) identify(picked.name, picked.id);
+    } else window.localStorage.removeItem(ME_KEY);
   }
 
   const currentPeriod: PeriodId | null =
