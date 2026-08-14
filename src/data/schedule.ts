@@ -50,6 +50,20 @@ export const WEDNESDAY_BELL_TIMES: Partial<Record<PeriodId, string>> = {
   "09": "2:50–3:23 PM",
 };
 
+/** Friday schedule — extended homeroom, slightly shorter periods. */
+export const FRIDAY_BELL_TIMES: Record<PeriodId, string> = {
+  "01": "8:10–8:48 AM",
+  "02": "8:53–9:31 AM",
+  "03": "9:36–10:14 AM",
+  HR: "10:19–11:04 AM",
+  "04": "11:09–11:47 AM",
+  "05": "11:52 AM–12:31 PM",
+  "06": "12:36–1:14 PM",
+  "07": "1:19–1:57 PM",
+  "08": "2:02–2:40 PM",
+  "09": "2:45–3:23 PM",
+};
+
 export const PERIOD_LABEL: Record<PeriodId, string> = {
   "01": "Per 01",
   "02": "Per 02",
