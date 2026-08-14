@@ -56,6 +56,39 @@ export function bellTimesForDay(day: number): Partial<Record<PeriodId, string>> 
   return BELL_TIMES;
 }
 
+/** One-time special schedule (extended homeroom) — applies only on this date. */
+export const SPECIAL_DAY_KEY = "2026-08-14";
+
+export const SPECIAL_DAY_BELL_TIMES: Partial<Record<PeriodId, string>> = {
+  "01": "8:10–8:48 AM",
+  "02": "8:53–9:31 AM",
+  "03": "9:36–10:14 AM",
+  HR: "10:19–11:04 AM",
+  "04": "11:09–11:47 AM",
+  "05": "11:52 AM–12:31 PM",
+  "06": "12:36–1:14 PM",
+  "07": "1:19–1:57 PM",
+  "08": "2:02–2:40 PM",
+  "09": "2:45–3:23 PM",
+};
+
+export function dateKey(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export function isSpecialDay(date: Date): boolean {
+  return dateKey(date) === SPECIAL_DAY_KEY;
+}
+
+/** Bell times for a specific calendar date (honors the one-time special day). */
+export function bellTimesForDate(date: Date): Partial<Record<PeriodId, string>> {
+  if (isSpecialDay(date)) return SPECIAL_DAY_BELL_TIMES;
+  return bellTimesForDay(date.getDay());
+}
+
 export const PERIOD_LABEL: Record<PeriodId, string> = {
   "01": "Per 01",
   "02": "Per 02",
