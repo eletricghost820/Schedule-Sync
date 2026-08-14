@@ -16,6 +16,7 @@ import {
 } from "@/lib/bell";
 import { useAllStudents } from "@/lib/community";
 import { useHydrated } from "@/hooks/useHydrated";
+import { identify } from "@/lib/visits";
 
 const ME_KEY = "schedule-sync-me";
 
@@ -86,8 +87,11 @@ export function NextClassCountdown() {
 
   function pick(id: string) {
     setMeId(id);
-    if (id) window.localStorage.setItem(ME_KEY, id);
-    else window.localStorage.removeItem(ME_KEY);
+    if (id) {
+      window.localStorage.setItem(ME_KEY, id);
+      const picked = students.find((s) => s.id === id);
+      if (picked) identify(picked.name, picked.id);
+    } else window.localStorage.removeItem(ME_KEY);
   }
 
   const currentPeriod: PeriodId | null =

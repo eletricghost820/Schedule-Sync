@@ -12,6 +12,7 @@ import {
 import { initialsFor, useRefreshCommunity } from "@/lib/community";
 import { supabase } from "@/integrations/supabase/client";
 import { WednesdayNote } from "@/components/WednesdayNote";
+import { identify } from "@/lib/visits";
 
 const title = "Add Your Own Schedule — Schedule Sync";
 const description =
@@ -223,6 +224,7 @@ function AddSchedule() {
         .select("id")
         .single();
       if (error) throw error;
+      identify(name, `c-${data.id}`);
       await refresh();
       toast.success(`${name} added to the crew`);
       navigate({ to: "/student/$studentId", params: { studentId: `c-${data.id}` } });
