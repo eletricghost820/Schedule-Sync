@@ -15,6 +15,8 @@ import logoAsset from "../assets/logo.png.asset.json";
 import { PageTransition } from "../components/PageTransition";
 import { Toaster } from "../components/ui/sonner";
 import { ThemeToggle } from "../components/ThemeToggle";
+import { WhoAreYou } from "../components/WhoAreYou";
+import { useAdminMode } from "../hooks/useAdminMode";
 
 const NAV = [
   { to: "/", label: "Friends" },
@@ -23,6 +25,8 @@ const NAV = [
 ] as const;
 
 function SiteChrome({ children }: { children: ReactNode }) {
+  const { admin } = useAdminMode();
+  const nav = admin ? [...NAV, { to: "/visitors", label: "Visitors" } as const] : NAV;
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-20 border-b border-border bg-card/80 text-foreground backdrop-blur">
@@ -45,7 +49,7 @@ function SiteChrome({ children }: { children: ReactNode }) {
           <ThemeToggle />
         </div>
         <nav className="mx-auto flex max-w-3xl gap-1 overflow-x-auto px-2 pb-2 lg:max-w-5xl lg:gap-2 lg:px-6 xl:max-w-6xl">
-          {NAV.map((item) => (
+          {nav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -195,6 +199,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+      <WhoAreYou />
       <SiteChrome>
         <PageTransition>
           <Outlet />
