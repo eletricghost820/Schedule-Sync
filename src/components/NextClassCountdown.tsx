@@ -6,6 +6,7 @@ import {
   type Slot,
   isFreeName,
   bellTimesForDate,
+  isSpecialDay,
 } from "@/data/schedule";
 import {
   bellStatusAt,
