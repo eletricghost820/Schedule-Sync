@@ -2,7 +2,6 @@ import {
   BELL_TIMES,
   PERIOD_ORDER,
   WEDNESDAY_BELL_TIMES,
-  FRIDAY_BELL_TIMES,
   type PeriodId,
 } from "@/data/schedule";
 
@@ -41,19 +40,14 @@ export const BELL_BLOCKS: BellBlock[] = buildBlocks(BELL_TIMES);
 /** Shortened Wednesday bells (no homeroom, later start). */
 export const WEDNESDAY_BLOCKS: BellBlock[] = buildBlocks(WEDNESDAY_BELL_TIMES);
 
-/** Friday bells — extended homeroom. */
-export const FRIDAY_BLOCKS: BellBlock[] = buildBlocks(FRIDAY_BELL_TIMES);
-
 export function blocksForDay(day: number): BellBlock[] {
   if (day === 3) return WEDNESDAY_BLOCKS;
-  if (day === 5) return FRIDAY_BLOCKS;
   return BELL_BLOCKS;
 }
 
 /** Bell times for a given weekday, falling back to the standard schedule. */
 export function bellTimesForDay(day: number): Partial<Record<PeriodId, string>> {
   if (day === 3) return WEDNESDAY_BELL_TIMES;
-  if (day === 5) return FRIDAY_BELL_TIMES;
   return BELL_TIMES;
 }
 
