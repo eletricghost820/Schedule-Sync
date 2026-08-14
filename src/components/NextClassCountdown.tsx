@@ -5,10 +5,11 @@ import {
   type PeriodId,
   type Slot,
   isFreeName,
+  bellTimesForDate,
+  isSpecialDay,
 } from "@/data/schedule";
 import {
   bellStatusAt,
-  bellTimesForDay,
   formatCountdown,
   type BellStatus,
 } from "@/lib/bell";
@@ -80,7 +81,7 @@ export function NextClassCountdown() {
   const status = useMemo(() => bellStatusAt(now), [now]);
   const day = now.getDay();
   const isWednesday = day === 3;
-  const times = bellTimesForDay(day);
+  const times = bellTimesForDate(now);
 
   function pick(id: string) {
     setMeId(id);
@@ -113,6 +114,11 @@ export function NextClassCountdown() {
         {hydrated && isWednesday ? (
           <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
             Wednesday · shortened
+          </span>
+        ) : null}
+        {hydrated && isSpecialDay(now) ? (
+          <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary">
+            Today only · extended homeroom
           </span>
         ) : null}
         <select

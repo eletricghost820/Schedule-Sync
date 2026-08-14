@@ -2,6 +2,8 @@ import {
   BELL_TIMES,
   PERIOD_ORDER,
   WEDNESDAY_BELL_TIMES,
+  SPECIAL_DAY_BELL_TIMES,
+  isSpecialDay,
   type PeriodId,
 } from "@/data/schedule";
 
@@ -40,9 +42,17 @@ export const BELL_BLOCKS: BellBlock[] = buildBlocks(BELL_TIMES);
 /** Shortened Wednesday bells (no homeroom, later start). */
 export const WEDNESDAY_BLOCKS: BellBlock[] = buildBlocks(WEDNESDAY_BELL_TIMES);
 
+/** One-time special day bells (extended homeroom). */
+export const SPECIAL_DAY_BLOCKS: BellBlock[] = buildBlocks(SPECIAL_DAY_BELL_TIMES);
+
 export function blocksForDay(day: number): BellBlock[] {
   if (day === 3) return WEDNESDAY_BLOCKS;
   return BELL_BLOCKS;
+}
+
+export function blocksForDate(date: Date): BellBlock[] {
+  if (isSpecialDay(date)) return SPECIAL_DAY_BLOCKS;
+  return blocksForDay(date.getDay());
 }
 
 /** Bell times for a given weekday, falling back to the standard schedule. */
@@ -87,7 +97,7 @@ export function bellStatusAt(now: Date): BellStatus {
   const day = now.getDay();
   if (day === 0 || day === 6) return { kind: "weekend", ...nextSchoolDay(day) };
 
-  const blocks = blocksForDay(day);
+  const blocks = blocksForDate(now);
   const mins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
 
   for (let i = 0; i < blocks.length; i++) {

@@ -1,7 +1,7 @@
+import { useTodayBellTimes } from "@/lib/useTodayBells";
 import { useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  BELL_TIMES,
   PERIOD_LABEL,
   PERIOD_ORDER,
   classKey,
@@ -40,6 +40,7 @@ function arrangements(slot: Slot) {
 }
 
 function Overlap() {
+  const { times } = useTodayBellTimes();
   const { students, isLoading } = useAllStudents();
   const [meId, setMeId] = useState<string>("");
   const shareRef = useRef<HTMLDivElement>(null);
@@ -122,7 +123,7 @@ function Overlap() {
             <div key={period} className="h-full rounded-xl border border-border bg-card p-3 shadow-sm">
               <div className="flex items-baseline justify-between gap-2">
                 <span className="font-display text-sm font-bold">{PERIOD_LABEL[period]}</span>
-                <span className="text-[11px] text-muted-foreground">{BELL_TIMES[period]}</span>
+                <span className="text-[11px] text-muted-foreground">{times[period]}</span>
               </div>
 
               {blocks.length === 0 ? (
