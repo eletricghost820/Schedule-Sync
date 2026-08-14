@@ -1,7 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "@/components/Modal";
 import { useAllStudents } from "@/lib/community";
-import { ME_KEY, logVisit, useVisitLogger } from "@/lib/visits";
+import {
+  ME_KEY,
+  logVisit,
+  alreadyLoggedThisSession,
+  markLoggedThisSession,
+} from "@/lib/visits";
 
 const ASKED_KEY = "schedule-sync-asked-name";
 
@@ -14,12 +19,18 @@ export function WhoAreYou() {
   const [open, setOpen] = useState(false);
   const [choice, setChoice] = useState("");
 
-  const resolveName = useCallback(() => {
-    const id = localStorage.getItem(ME_KEY);
-    return id ? id : null;
-  }, []);
+  const logged = useRef(false);
 
-  useVisitLogger(resolveName);
+  // One log row per browser session, stamped with the saved name when known.
+  useEffect(() => {
+    if (logged.current || alreadyLoggedThisSession()) return;
+    if (!students.length) return;
+    logged.current = true;
+    markLoggedThisSession();
+    const id = localStorage.getItem(ME_KEY);
+    const me = students.find((s) => s.id === id);
+    void logVisit(me ? me.name : null);
+  }, [students]);
 
   useEffect(() => {
     if (localStorage.getItem(ASKED_KEY)) return;

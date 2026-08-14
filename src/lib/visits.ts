@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const ME_KEY = "schedule-sync-me";
@@ -27,11 +26,10 @@ export async function logVisit(name: string | null) {
   }
 }
 
-/** Logs one row per browser session. */
-export function useVisitLogger(resolveName: () => string | null) {
-  useEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY)) return;
-    sessionStorage.setItem(SESSION_KEY, "1");
-    void logVisit(resolveName());
-  }, [resolveName]);
+export function alreadyLoggedThisSession(): boolean {
+  return sessionStorage.getItem(SESSION_KEY) === "1";
+}
+
+export function markLoggedThisSession() {
+  sessionStorage.setItem(SESSION_KEY, "1");
 }
