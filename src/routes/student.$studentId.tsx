@@ -1,4 +1,4 @@
-import { useTodayBellTimes } from "@/lib/useTodayBells";
+import { useBellTimesForDay } from "@/lib/useTodayBells";
 import { useRef } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
@@ -41,12 +41,12 @@ export const Route = createFileRoute("/student/$studentId")({
 });
 
 function StudentPage() {
-  const { times } = useTodayBellTimes();
   const { studentId } = Route.useParams();
   const { students, isLoading } = useAllStudents();
   const student = students.find((s) => s.id === studentId);
   const shareRef = useRef<HTMLDivElement>(null);
   const { day, setDay, today } = useSelectedDay();
+  const { times } = useBellTimesForDay(day);
 
   if (!student) {
     return (
@@ -73,7 +73,7 @@ function StudentPage() {
         <div className="min-w-0 flex-1">
           <h1 className="text-2xl font-bold leading-tight">{student.name}</h1>
           <p className="text-xs text-muted-foreground">
-            Daily schedule · standard bell times
+            Daily schedule · {day === 3 ? "shortened Wednesday bells" : "standard bell times"}
             {student.counselor ? ` · Counselor: ${student.counselor}` : ""}
           </p>
         </div>
@@ -96,7 +96,7 @@ function StudentPage() {
             </tr>
           </thead>
           <tbody>
-            {PERIOD_ORDER.map((p) => {
+            {PERIOD_ORDER.filter((p) => times[p]).map((p) => {
               const slot = slotForDay(student.slots[p], day);
               const freePeriod = p !== "HR" && isFree(slot);
               return (
