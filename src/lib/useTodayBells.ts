@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   BELL_TIMES,
+  bellTimesForDay,
   bellTimesForDate,
   isSpecialDay,
   type PeriodId,
@@ -22,4 +23,25 @@ export function useTodayBellTimes(): {
   }, []);
 
   return state;
+}
+
+/**
+ * Bell times for the selected weekday. When the selection is today, honors the
+ * one-time special schedule; Wednesday uses the shortened bells (no homeroom).
+ */
+export function useBellTimesForDay(day: number): {
+  times: Partial<Record<PeriodId, string>>;
+  special: boolean;
+} {
+  const [today, setToday] = useState<{ day: number; special: boolean } | null>(null);
+
+  useEffect(() => {
+    const now = new Date();
+    setToday({ day: now.getDay(), special: isSpecialDay(now) });
+  }, []);
+
+  if (today && today.day === day && today.special) {
+    return { times: bellTimesForDate(new Date()), special: true };
+  }
+  return { times: bellTimesForDay(day), special: false };
 }

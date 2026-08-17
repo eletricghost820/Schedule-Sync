@@ -1,4 +1,4 @@
-import { useTodayBellTimes } from "@/lib/useTodayBells";
+import { useBellTimesForDay } from "@/lib/useTodayBells";
 import { useMemo, useRef, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -44,17 +44,17 @@ function arrangements(slot: Slot) {
 }
 
 function Overlap() {
-  const { times } = useTodayBellTimes();
   const { students, isLoading } = useAllStudents();
   const [meId, setMeId] = useState<string>("");
   const shareRef = useRef<HTMLDivElement>(null);
   const { day, setDay, today } = useSelectedDay();
+  const { times } = useBellTimesForDay(day);
 
   const me = students.find((s) => s.id === meId);
 
   const rows = useMemo(() => {
     if (!me) return [];
-    return PERIOD_ORDER.map((period) => {
+    return PERIOD_ORDER.filter((period) => times[period]).map((period) => {
       const slot = slotForDay(me.slots[period], day);
       const mine = slot ? arrangements(slot) : [];
       const blocks = mine.map((a) => {
@@ -74,7 +74,7 @@ function Overlap() {
       });
       return { period, blocks };
     });
-  }, [me, students, day]);
+  }, [me, students, day, times]);
 
   return (
     <div className="space-y-4">
