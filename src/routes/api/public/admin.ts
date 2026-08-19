@@ -5,7 +5,19 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const Body = z.object({
   password: z.string().min(1).max(100),
-  action: z.enum(["verify", "remove", "trash", "restore", "purge", "hide", "unhide", "visits"]),
+  action: z.enum([
+    "verify",
+    "remove",
+    "trash",
+    "restore",
+    "purge",
+    "hide",
+    "unhide",
+    "visits",
+    "feedback",
+    "feedback_toggle",
+    "feedback_delete",
+  ]),
   id: z.string().min(1).max(100).optional(),
   name: z.string().min(1).max(80).optional(),
   initials: z.string().min(1).max(4).optional(),
@@ -54,6 +66,44 @@ export const Route = createFileRoute("/api/public/admin")({
               .limit(500);
             if (error) return json({ ok: false, error: error.message }, 502);
             return json({ ok: true, visits: data ?? [] });
+          }
+
+          if (parsed.data.action === "feedback") {
+            const { data, error } = await supabaseAdmin
+              .from("feedback")
+              .select("id,kind,message,name,resolved,created_at")
+              .order("created_at", { ascending: false })
+              .limit(500);
+            if (error) return json({ ok: false, error: error.message }, 502);
+            return json({ ok: true, feedback: data ?? [] });
+          }
+
+          if (
+            parsed.data.action === "feedback_toggle" ||
+            parsed.data.action === "feedback_delete"
+          ) {
+            if (!parsed.data.id || !UUID.test(parsed.data.id))
+              return json({ ok: false, error: "Bad id" }, 400);
+            if (parsed.data.action === "feedback_delete") {
+              const { error } = await supabaseAdmin
+                .from("feedback")
+                .delete()
+                .eq("id", parsed.data.id);
+              if (error) return json({ ok: false, error: error.message }, 502);
+              return json({ ok: true });
+            }
+            const current = await supabaseAdmin
+              .from("feedback")
+              .select("resolved")
+              .eq("id", parsed.data.id)
+              .maybeSingle();
+            if (current.error) return json({ ok: false, error: current.error.message }, 502);
+            const { error } = await supabaseAdmin
+              .from("feedback")
+              .update({ resolved: !current.data?.resolved })
+              .eq("id", parsed.data.id);
+            if (error) return json({ ok: false, error: error.message }, 502);
+            return json({ ok: true });
           }
 
           // Anything trashed more than a week ago is gone for good.

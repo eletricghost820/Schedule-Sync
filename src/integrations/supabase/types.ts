@@ -44,6 +44,39 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          created_at: string
+          id: string
+          kind: string
+          message: string
+          name: string | null
+          resolved: boolean
+          updated_at: string
+          visitor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kind: string
+          message: string
+          name?: string | null
+          resolved?: boolean
+          updated_at?: string
+          visitor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kind?: string
+          message?: string
+          name?: string | null
+          resolved?: boolean
+          updated_at?: string
+          visitor_id?: string | null
+        }
+        Relationships: []
+      }
       hidden_students: {
         Row: {
           hidden_at: string
