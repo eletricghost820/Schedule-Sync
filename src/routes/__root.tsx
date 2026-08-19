@@ -22,11 +22,12 @@ const NAV = [
   { to: "/", label: "Friends" },
   { to: "/overlap", label: "Class Overlap" },
   { to: "/add-schedule", label: "Add Yours" },
+  { to: "/suggest", label: "Suggest" },
 ] as const;
 
 function SiteChrome({ children }: { children: ReactNode }) {
   const { admin } = useAdminMode();
-  const nav = admin ? [...NAV, { to: "/visitors", label: "Visitors" } as const] : NAV;
+  const nav = admin ? [...NAV, { to: "/admin-tools", label: "Admin Tools" } as const] : NAV;
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-20 border-b border-border bg-card/80 text-foreground backdrop-blur">
