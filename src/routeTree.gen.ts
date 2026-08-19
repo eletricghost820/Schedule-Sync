@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AddScheduleRouteImport } from './routes/add-schedule'
 import { Route as AdminToolsRouteImport } from './routes/admin-tools'
 import { Route as OverlapRouteImport } from './routes/overlap'
+import { Route as SuggestRouteImport } from './routes/suggest'
 import { Route as StudentStudentIdRouteImport } from './routes/student.$studentId'
 import { Route as ApiPublicAdminRouteImport } from './routes/api/public/admin'
 import { Route as ApiPublicExtractScheduleRouteImport } from './routes/api/public/extract-schedule'
@@ -37,6 +38,11 @@ const OverlapRoute = OverlapRouteImport.update({
   path: '/overlap',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SuggestRoute = SuggestRouteImport.update({
+  id: '/suggest',
+  path: '/suggest',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const StudentStudentIdRoute = StudentStudentIdRouteImport.update({
   id: '/student/$studentId',
   path: '/student/$studentId',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/add-schedule': typeof AddScheduleRoute
   '/admin-tools': typeof AdminToolsRoute
   '/overlap': typeof OverlapRoute
+  '/suggest': typeof SuggestRoute
   '/student/$studentId': typeof StudentStudentIdRoute
   '/api/public/admin': typeof ApiPublicAdminRoute
   '/api/public/extract-schedule': typeof ApiPublicExtractScheduleRoute
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/add-schedule': typeof AddScheduleRoute
   '/admin-tools': typeof AdminToolsRoute
   '/overlap': typeof OverlapRoute
+  '/suggest': typeof SuggestRoute
   '/student/$studentId': typeof StudentStudentIdRoute
   '/api/public/admin': typeof ApiPublicAdminRoute
   '/api/public/extract-schedule': typeof ApiPublicExtractScheduleRoute
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/add-schedule': typeof AddScheduleRoute
   '/admin-tools': typeof AdminToolsRoute
   '/overlap': typeof OverlapRoute
+  '/suggest': typeof SuggestRoute
   '/student/$studentId': typeof StudentStudentIdRoute
   '/api/public/admin': typeof ApiPublicAdminRoute
   '/api/public/extract-schedule': typeof ApiPublicExtractScheduleRoute
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/add-schedule'
     | '/admin-tools'
     | '/overlap'
+    | '/suggest'
     | '/student/$studentId'
     | '/api/public/admin'
     | '/api/public/extract-schedule'
@@ -98,6 +108,7 @@ export interface FileRouteTypes {
     | '/add-schedule'
     | '/admin-tools'
     | '/overlap'
+    | '/suggest'
     | '/student/$studentId'
     | '/api/public/admin'
     | '/api/public/extract-schedule'
@@ -107,6 +118,7 @@ export interface FileRouteTypes {
     | '/add-schedule'
     | '/admin-tools'
     | '/overlap'
+    | '/suggest'
     | '/student/$studentId'
     | '/api/public/admin'
     | '/api/public/extract-schedule'
@@ -117,6 +129,7 @@ export interface RootRouteChildren {
   AddScheduleRoute: typeof AddScheduleRoute
   AdminToolsRoute: typeof AdminToolsRoute
   OverlapRoute: typeof OverlapRoute
+  SuggestRoute: typeof SuggestRoute
   StudentStudentIdRoute: typeof StudentStudentIdRoute
   ApiPublicAdminRoute: typeof ApiPublicAdminRoute
   ApiPublicExtractScheduleRoute: typeof ApiPublicExtractScheduleRoute
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OverlapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/suggest': {
+      id: '/suggest'
+      path: '/suggest'
+      fullPath: '/suggest'
+      preLoaderRoute: typeof SuggestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/student/$studentId': {
       id: '/student/$studentId'
       path: '/student/$studentId'
@@ -181,6 +201,7 @@ const rootRouteChildren: RootRouteChildren = {
   AddScheduleRoute: AddScheduleRoute,
   AdminToolsRoute: AdminToolsRoute,
   OverlapRoute: OverlapRoute,
+  SuggestRoute: SuggestRoute,
   StudentStudentIdRoute: StudentStudentIdRoute,
   ApiPublicAdminRoute: ApiPublicAdminRoute,
   ApiPublicExtractScheduleRoute: ApiPublicExtractScheduleRoute,
