@@ -4,7 +4,7 @@ import { Users, RefreshCw } from "lucide-react";
 import { adminRequest, type VisitRow } from "@/lib/admin-api";
 import { useAdminMode } from "@/hooks/useAdminMode";
 
-export const Route = createFileRoute("/visitors")({
+export const Route = createFileRoute("/admin-tools")({
   component: VisitorsPage,
   head: () => ({
     meta: [
